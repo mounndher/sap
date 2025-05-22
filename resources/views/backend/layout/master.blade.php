@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
   <!-- CSS Libraries -->
+      <link rel="stylesheet" href="{{ asset('backend1/assets/modules/summernote/summernote-bs4.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend1/assets/modules/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend1/assets/modules/datatables/datatables.min.css') }}">
 
   <!-- Template CSS -->
   <link rel="stylesheet" href="{{ asset('backend1/assets/css/style.css')}}">
@@ -27,10 +30,11 @@
 
       <!-- Main Content -->
       <div class="main-content">
-        
+
           @yield('content')
       </div>
       @include('backend.layout.footer')
+      @stack('scripts')
     </div>
   </div>
 
@@ -43,11 +47,16 @@
   <script src="{{ asset('backend1/assets/js/stisla.js') }}"></script>
 
   <!-- JS Libraies -->
-
+    <script src="{{ asset('backend1/assets/modules/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}"></script>
+    <script src="{{ asset('backend1/assets/modules/datatables/Select-1.2.4/js/dataTables.select.min.js') }}"></script>
   <!-- Template JS File -->
   <script src="{{ asset('backend1/assets/js/scripts.js') }}"></script>
   <script src="{{ asset('backend1/assets/js/scripts.js') }}"></script>
-
+ <script src="{{ asset('backend1/assets/modules/summernote/summernote-bs4.js') }}"></script>
+    <script src="{{ asset('backend1/assets/modules/upload-preview/assets/js/jquery.uploadPreview.min.js') }}"></script>
+    <script src="{{ asset('backend1/assets/modules/select2/dist/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('backend1/assets/modules/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('backend1/assets/modules/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}">
   <!-- Page Specific JS File -->
 </body>
 </html>

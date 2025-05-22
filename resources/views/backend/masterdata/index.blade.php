@@ -2,17 +2,13 @@
 @section('content')
 <section class="section">
   <div class="section-header">
-    <h1>Table</h1>
-    <div class="section-header-breadcrumb">
-      <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-      <div class="breadcrumb-item"><a href="#">Components</a></div>
-      <div class="breadcrumb-item">Table</div>
-    </div>
+    <h1>Article</h1>
+    
   </div>
 
   <div class="section-body">
-    <h2 class="section-title">Table</h2>
-    <p class="section-lead">Example of some Bootstrap table components.</p>
+    <h2 class="section-title">Article</h2>
+
 
     <div class="row">
       <div class="col-12 ">
@@ -20,7 +16,7 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h4>Simple Table</h4>
             <div class="d-flex">
-              <a href="" class="btn btn-primary mr-3">Create New</a>
+              <a href="{{ route('articles.create') }}" class="btn btn-primary mr-3">Create New</a>
               <form>
                 <div class="input-group">
                   <input type="text" class="form-control" placeholder="Search">

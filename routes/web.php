@@ -43,5 +43,6 @@ Route::middleware('auth')->group(function () {
 });
 // routes/web.php
 Route::get('/sap-materials', [SapController::class, 'showMaterials']);
+Route::get('/sap-showuinte', [SapController::class, 'showuinte']);
 Route::get('/view-materials', [SapController::class, 'viewMaterials'])->name('show.materials');
 require __DIR__.'/auth.php';

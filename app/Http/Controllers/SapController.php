@@ -39,6 +39,23 @@ public function showMaterials()
     // In case of error, pass empty or error info
     return view('we', ['materialsData' => null, 'error' => 'Failed to fetch data']);
 }
+public function showuinte()
+{
+    $url = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MARASet?\$format=json";
+
+    $response = Http::withBasicAuth(env('SAP_USER'), env('SAP_PASS'))
+                    ->get($url);
+
+    if ($response->successful()) {
+        $sapData = $response->json(); // Full JSON from SAP
+
+        // Pass the entire JSON to the view in a variable called 'materialsData'
+        return view('we2', ['materialsData' => $sapData]);
+    }
+
+    // In case of error, pass empty or error info
+    return view('we2', ['materialsData' => null, 'error' => 'Failed to fetch data']);
+}
 
 // In your controller
 public function viewMaterials(Request $request)
