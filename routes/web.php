@@ -32,11 +32,13 @@ Route::middleware('auth')->group(function () {
     ///////////////// Article Routes //////////////////////////////////////////////////////////////
     Route::get('articles',[ArticleController::class, 'index'])->name('articles.index');
     Route::get('articles/create',[ArticleController::class, 'create'])->name('articles.create');
-    Route::post('articles/store',[ArticleController::class, 'store'])->name('articles.store');
+    Route::post('articles/store',[ArticleController::class, 'storeDonnesdebase'])->name('articles.store');
+    Route::post('articles/store/achat',[ArticleController::class, 'storeachat'])->name('articles.storeachat');
+    Route::get('/achat-form/{article_id}', [ArticleController::class, 'showAchatForm'])->name('showAchatForm');
+
     Route::get('articles/edit/{id}',[ArticleController::class, 'edit'])->name('articles.edit');
     Route::put('articles/update/{id}',[ArticleController::class, 'update'])->name('articles.update');
-    Route::delete('articles/destroy/{id}',[ArticleController::class, 'destroy'])->name('articles.destroy');
-
+Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
 
 

@@ -1,113 +1,102 @@
 <!DOCTYPE html>
-
 <html lang="en">
-	<!--begin::Head-->
-	<head><base href="../../../">
-		<title>Metronic - the world's #1 selling Bootstrap Admin Theme Ecosystem for HTML, Vue, React, Angular &amp; Laravel by Keenthemes</title>
-		<meta name="description" content="The most advanced Bootstrap Admin Theme on Themeforest trusted by 94,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue &amp; Laravel versions. Grab your copy now and get life-time updates for free." />
-		<meta name="keywords" content="Metronic, bootstrap, bootstrap 5, Angular, VueJs, React, Laravel, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta charset="utf-8" />
-		<meta property="og:locale" content="en_US" />
-		<meta property="og:type" content="article" />
-		<meta property="og:title" content="Metronic - Bootstrap 5 HTML, VueJS, React, Angular &amp; Laravel Admin Dashboard Theme" />
-		<meta property="og:url" content="https://keenthemes.com/metronic" />
-		<meta property="og:site_name" content="Keenthemes | Metronic" />
-		<link rel="canonical" href="https://preview.keenthemes.com/metronic8" />
-		<link rel="shortcut icon" href="{{asset('backend/assets/media/logos/favicon.ico')}}" />
-		<!--begin::Fonts-->
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-		<!--end::Fonts-->
-		<!--begin::Global Stylesheets Bundle(used by all pages)-->
-		<link href="{{asset('backend/assets/plugins/global/plugins.bundle.css')}}" rel="stylesheet" type="text/css" />
-		<link href="{{asset('backend/assets/css/style.bundle.css')}}" rel="stylesheet" type="text/css" />
-		<!--end::Global Stylesheets Bundle-->
-	</head>
-	<!--end::Head-->
-	<!--begin::Body-->
-	<body id="kt_body" class="bg-body">
-		<!--begin::Main-->
-		<div class="d-flex flex-column flex-root">
-			<!--begin::Authentication - Sign-in -->
-			<div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed" style="background-image: url(assets/media/illustrations/sketchy-1/14.png">
-				<!--begin::Content-->
-				<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
-					<!--begin::Logo-->
-					<a href="#" class="mb-12">
-						<img alt="Logo" src="{{ asset('backend/assets/media/logos/logo-pharmaInvest.svg') }}" style="width: 350px; height: 300px;" />
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Login &mdash</title>
+
+    <!-- General CSS Files -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="../node_modules/bootstrap-social/bootstrap-social.css">
+
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="{{ asset('backend1/assets/css/style.css')}}">
+    <link rel="stylesheet" href="{{ asset('backend1/assets/css/components.css')}}">
+</head>
+
+<body>
+    <div id="app">
+        <section class="section">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+                        <div class="login-brand">
+                            <img src="{{ asset('backend1/assets/img/sap-3.svg') }}" alt="logo" width="100" class="shadow-light rounded-circle">
+                        </div>
+
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h4>Login</h4>
+                            </div>
+
+                            <div class="card-body">
+                                <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
+                                    @csrf
+
+                                    <div class="form-group">
+                                        <label for="email">Username</label>
+                                        <input id="email" type="username" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" tabindex="1" required autofocus>
+
+                                        <div class="invalid-feedback">
+                                            Please fill in your email
+                                        </div>
+
+                                        @error('username')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="d-block">
+                                            <label for="password" class="control-label">Password</label>
+                                        </div>
+                                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" tabindex="2" required>
+
+                                        <div class="invalid-feedback">
+                                            Please fill in your password
+                                        </div>
+
+                                        @error('password')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
+                                            Login
+                                        </button>
+                                    </div>
+                                </form>
 
 
-					</a>
-					<!--end::Logo-->
-					<!--begin::Wrapper-->
-					<div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
-						<!--begin::Form-->
-						<form class="form w-100" novalidate="novalidate" method="POST" id="kt_sign_in_form" action="{{ route('login') }}">
-                            @csrf
-							<!--begin::Heading-->
-							<div class="text-center mb-10">
-								<!--begin::Title-->
-								<h1 class="text-dark mb-3">Sign In </h1>
 
-							</div>
-							<!--begin::Heading-->
-							<!--begin::Input group-->
-							<div class="fv-row mb-10">
-								<!--begin::Label-->
-								<label class="form-label fs-6 fw-bolder text-dark">username</label>
-								<!--end::Label-->
-								<!--begin::Input-->
-								<input class="form-control form-control-lg form-control-solid" type="text" name="username" autocomplete="off" />
+                            </div>
+                        </div>
 
-                                <span class="text-danger">{{ $errors->first('username') }}</span>
-								<!--end::Input-->
-							</div>
-							<!--end::Input group-->
-							<!--begin::Input group-->
-							<div class="fv-row mb-10">
-								<!--begin::Wrapper-->
-								<div class="d-flex flex-stack mb-2">
-									<!--begin::Label-->
-									<label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label>
 
-									<!--end::Label-->
-									
-								</div>
-								<!--end::Wrapper-->
-								<!--begin::Input-->
-								<input class="form-control form-control-lg form-control-solid" type="password" name="password" autocomplete="off" />
-                                <span class="text-danger"> {{ $errors->first('password') }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-								<!--end::Input-->
-							</div>
-							<!--end::Input group-->
-							<!--begin::Actions-->
-							<div class="text-center">
-								<!--begin::Submit button-->
-								<button type="submit" id="" class="btn btn-lg btn-primary w-100 mb-5">
-									<span class="indicator-label">Continue</span>
+    <!-- General JS Scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="{{ asset('backend1/assets/js/stisla.js') }}"></script>
 
-								</button>
+    <!-- JS Libraies -->
 
-							</div>
-							<!--end::Actions-->
-						</form>
-						<!--end::Form-->
-					</div>
-					<!--end::Wrapper-->
-				</div>
+    <!-- Template JS File -->
+    <script src="{{ asset('backend1/assets/js/scripts.js')}}"></script>
+    <script src="{{ asset('backend1/assets/js/custom.js')}}"></script>
 
-			</div>
-
-		</div>
-		<!--end::Main-->
-		<script></script>
-
-		<script src="{{asset('backend/assets/plugins/global/plugins.bundle.js')}}"></script>
-		<script src="{{asset('backend/assets/js/scripts.bundle.js')}}"></script>
-
-		<script src="{{asset('backend/assets/js/custom/authentication/sign-in/general.js')}}"></script>
-
-	</body>
-	<!--end::Body-->
+    <!-- Page Specific JS File -->
+</body>
 </html>

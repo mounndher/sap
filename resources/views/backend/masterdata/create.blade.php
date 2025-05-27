@@ -17,7 +17,7 @@
     <div class="section-body">
         <h2 class="section-title">All About Master DATA</h2>
         <p class="section-lead">
-            You can adjust all general settings here
+            ...
         </p>
 
         <div id="output-status"></div>
@@ -25,102 +25,55 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Jump To</h4>
+                        <h4>View</h4>
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="settings-tabs">
-                            <li class="nav-item"><a href="#" class="nav-link active" data-target="#form-general">General</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link" data-target="#form-seo">SEO</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link" data-target="#form-email">Email</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link" data-target="#form-system">System</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link" data-target="#form-security">Security</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link" data-target="#form-automation">Automation</a></li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link {{ $step !== 'achat' ? 'active' : '' }}" data-target="#form-general">Données de base</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link {{ $step === 'achat' ? 'active' : '' }}" data-target="#form-achat">Achat</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" data-target="#form-stock">Stock division</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" data-target="#form-comptabilite">Comptabilité</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
-                <form id="setting-form">
-                    <div class="card" id="settings-card">
-                        <div class="card-header">
-                            <h4>General Settings</h4>
-                        </div>
-                        <div class="card-body">
-
-                            <div class="form-group row align-items-center">
-                                <label for="site-title" class="form-control-label col-sm-3 text-md-right">Désignation</label>
-                                <div class="col-sm-6 col-md-9">
-                                    <input type="text" name="site_title" class="form-control" id="site-title" list="designation-options">
-
-                                    <datalist id="designation-options">
-                                        @if (!empty($materialsData) && isset($materialsData['d']['results']))
-                                        @foreach ($materialsData['d']['results'] as $item)
-                                        <option value="{{ $item['Maktg'] }}">
-                                            @endforeach
-                                            @else
-                                        <option value="No data available">
-                                            @endif
-                                    </datalist>
-                                </div>
-                            </div>
-                            <div class="form-group row align-items-center">
-                                <label for="base-unit" class="form-control-label col-sm-3 text-md-right">Unité de quantité de base</label>
-                                <div class="col-sm-6 col-md-9">
-                                    <input type="text" name="base_unit" class="form-control" id="base-unit" list="unit-options">
-
-                                    <datalist id="unit-options">
-                                        @if (!empty($unitData) && isset($unitData['d']['results']))
-                                        @foreach ($unitData['d']['results'] as $item)
-                                        <option value="{{ $item['Msehi'] }}">
-                                            @endforeach
-                                            @else
-                                        <option value="No data available">
-                                            @endif
-
-                                    </datalist>
-                                </div>
-                            </div>
-                            <div class="form-group row align-items-center">
-                                <label for="base-unit" class="form-control-label col-sm-3 text-md-right">Unité D achat </label>
-                                <div class="col-sm-6 col-md-9">
-                                    <input type="text" name="base_unit" class="form-control" id="base-unit" list="unit-options">
-
-                                    <datalist id="unit-options">
-
-                                    </datalist>
-                                </div>
-                            </div>
-
-
-
-                        </div>
-                        <div class="card-footer bg-whitesmoke text-md-right">
-                            <button class="btn btn-primary" id="save-btn">Save Changes</button>
-                            <button class="btn btn-secondary" type="button">Reset</button>
-                        </div>
-                    </div>
-                </form>
-
-                <div id="form-seo" class="settings-form d-none">
-                    <form>
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>SEO Settings</h4>
-                            </div>
-                            <div class="card-body">
-                                <!-- SEO form fields -->
-                            </div>
-                            <div class="card-footer text-md-right">
-                                <button class="btn btn-primary">Save</button>
-                            </div>
-                        </div>
-                    </form>
+                <!-- Données de base form (shown by default) -->
+                <div id="form-general" class="settings-form {{ $step !== 'achat' ? '' : 'd-none' }}">
+                    @include('backend.masterdata.section.donnesdebase', [
+                        'materialsData' => $materialsData,
+                        'unitsData' => $unitsData,
+                    ])
                 </div>
 
-                <!-- Repeat for other forms: form-email, form-system, form-security, form-automation -->
+                <!-- Achat form -->
+                <div id="form-achat" class="settings-form {{ $step === 'achat' ? '' : 'd-none' }}">
+                    @include('backend.masterdata.section.achat', [
+                        'article_id' => $article_id,
+                        'unitsData' => $unitsData,
+                    ])
+                </div>
+
+                <!-- Stock division form (hidden by default) -->
+                <div id="form-stock" class="settings-form d-none">
+                    <!-- Add your stock division content here -->
+                </div>
+
+                <!-- Comptabilité form (hidden by default) -->
+                <div id="form-comptabilite" class="settings-form d-none">
+                    <!-- Add your comptabilité content here -->
+                </div>
+
+                <!-- Remove the old SEO form as it's not needed anymore -->
             </div>
-
-
         </div>
     </div>
 </section>
@@ -128,27 +81,32 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('#settings-tabs .nav-link');
-        const forms = document.querySelectorAll('.settings-form');
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.querySelectorAll('#settings-tabs .nav-link');
+  const forms = document.querySelectorAll('.settings-form');
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = tab.getAttribute('data-target');
 
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
+      if (target !== "#form-general") {
+        const requiredField = document.querySelector('#form-general input[name="MAKTX"]');
+        if (!requiredField || requiredField.value.trim() === '') {
+          alert("Veuillez remplir le champ Données de base avant de continuer.");
+          return;
+        }
+      }
 
-                // Hide all forms
-                forms.forEach(f => f.classList.add('d-none'));
+      tabs.forEach(t => t.classList.remove('active'));
+      forms.forEach(f => f.classList.add('d-none'));
 
-                // Activate current tab and show corresponding form
-                tab.classList.add('active');
-                const target = tab.getAttribute('data-target');
-                document.querySelector(target).classList.remove('d-none');
-            });
-        });
+      tab.classList.add('active');
+      document.querySelector(target).classList.remove('d-none');
     });
-
+  });
+});
 </script>
 @endpush
+
+
