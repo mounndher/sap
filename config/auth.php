@@ -62,17 +62,17 @@ return [
     'providers' => [
         'users' => [
         'driver' => 'ldap',
-        'model' => LdapRecord\Models\OpenLDAP\User::class,
+        'model' => LdapRecord\Models\ActiveDirectory\User::class,
         'rules' => [],
         'database' => [
             'model' => App\Models\User::class,
-            'sync_passwords' => false,
+            'sync_passwords' => true,
             'sync_attributes' => [
-                'name' => 'cn',
-                'username'=>'uid',
-                'email' => 'mail',
+                  'username' => 'samaccountname',  // ✅ Unique login
+                   'name' => 'cn',                  // ✅ Nom complet
+                //'email' => 'mail',
             ],
-        'identifier' => 'username',
+         'identifier' => 'name', // ✅ use email as login key
 
         ],
     ],

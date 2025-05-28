@@ -1,5 +1,15 @@
 @extends('backend.layout.master')
 @section('content')
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <strong>Veuillez corriger les erreurs suivantes :</strong>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 <section class="section">
     <div class="section-header">
@@ -30,13 +40,10 @@
                     <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="settings-tabs">
                             <li class="nav-item">
-                                <a href="#" class="nav-link {{ $step !== 'achat' ? 'active' : '' }}" data-target="#form-general">Données de base</a>
+                                <a href="#" class="nav-link active" data-target="#form-general">Données de base</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link {{ $step === 'achat' ? 'active' : '' }}" data-target="#form-achat">Achat</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link" data-target="#form-stock">Stock division</a>
+                                <a href="#" class="nav-link" data-target="#form-achat">Achat</a>
                             </li>
                             <li class="nav-item">
                                 <a href="#" class="nav-link" data-target="#form-comptabilite">Comptabilité</a>
@@ -47,29 +54,21 @@
             </div>
             <div class="col-md-8">
                 <!-- Données de base form (shown by default) -->
-                <div id="form-general" class="settings-form {{ $step !== 'achat' ? '' : 'd-none' }}">
-                    @include('backend.masterdata.section.donnesdebase', [
-                        'materialsData' => $materialsData,
-                        'unitsData' => $unitsData,
-                    ])
+                <div id="form-general" class="settings-form">
+                    @include('backend.masterdata.section.donnesdebase')
                 </div>
 
-                <!-- Achat form -->
-                <div id="form-achat" class="settings-form {{ $step === 'achat' ? '' : 'd-none' }}">
-                    @include('backend.masterdata.section.achat', [
-                        'article_id' => $article_id,
-                        'unitsData' => $unitsData,
-                    ])
+                <!-- Achat form (hidden by default) -->
+                <div id="form-achat" class="settings-form d-none">
+                    @include('backend.masterdata.section.achat')
+
                 </div>
 
-                <!-- Stock division form (hidden by default) -->
-                <div id="form-stock" class="settings-form d-none">
-                    <!-- Add your stock division content here -->
-                </div>
+
 
                 <!-- Comptabilité form (hidden by default) -->
                 <div id="form-comptabilite" class="settings-form d-none">
-                    <!-- Add your comptabilité content here -->
+                    @include('backend.masterdata.section.cotabilite')
                 </div>
 
                 <!-- Remove the old SEO form as it's not needed anymore -->

@@ -28,7 +28,7 @@ class LoginRequest extends FormRequest
     {
         return [
             //'email' => ['required', 'string', 'email'],
-            'username' => ['required', 'string'],
+            'name' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -38,24 +38,26 @@ class LoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(): void
-    {
-        $this->ensureIsNotRateLimited();
-        $credentials = [
-            'uid' => $this->input('username'),  // get username input, not email
-            'password' => $this->input('password'),
-        ];
+   public function authenticate(): void
+{
+    $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($credentials, $this->filled('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+    $credentials = [
+        'name' => $this->input('name'), // using 'name' as identifier
+        'password' => $this->input('password'),
+    ];
 
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
-        }
+    if (!Auth::attempt($credentials, $this->filled('remember'))) {
+        RateLimiter::hit($this->throttleKey());
 
-        RateLimiter::clear($this->throttleKey());
+        throw ValidationException::withMessages([
+            'name' => trans('auth.failed'), // ✅ Display this in Blade
+        ]);
     }
+
+    RateLimiter::clear($this->throttleKey());
+}
+
 
     /**
      * Ensure the login request is not rate limited.

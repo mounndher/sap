@@ -8,10 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     use HasFactory;
-    public function achat()
-{
-    return $this->hasOne(Achat::class);
-}
+ 
 
     protected $fillable = [
         'MAKTX',
@@ -20,6 +17,9 @@ class Article extends Model
         'MEINS',
         'XCHPF',
         'EKGRP',
+        'BSTME',
+        'BKLAS',
+        'VPRSV_1',
     ];
 }
 

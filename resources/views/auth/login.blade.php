@@ -54,12 +54,12 @@
 							<!--begin::Input group-->
 							<div class="fv-row mb-10">
 								<!--begin::Label-->
-								<label class="form-label fs-6 fw-bolder text-dark">username</label>
+								<label class="form-label fs-6 fw-bolder text-dark">name</label>
 								<!--end::Label-->
 								<!--begin::Input-->
-								<input class="form-control form-control-lg form-control-solid" type="text" name="username" autocomplete="off" />
+								<input class="form-control form-control-lg form-control-solid" type="text" name="name" autocomplete="off" />
 
-                                <span class="text-danger">{{ $errors->first('username') }}</span>
+                                <span class="text-danger">{{ $errors->first('name') }}</span>
 								<!--end::Input-->
 							</div>
 							<!--end::Input group-->

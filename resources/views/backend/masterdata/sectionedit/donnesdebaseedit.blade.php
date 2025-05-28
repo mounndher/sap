@@ -1,5 +1,5 @@
 <div class="card" id="settings-card">
-    <form id="setting-form" action="{{ route('articles.store') }}" method="POST">
+    <form id="setting-form" action="{{ route('articles.updatedonneesbase',$articles->id) }}" method="POST">
         @csrf
         <div class="card-header">
             <h4>Données de base</h4>

@@ -5,16 +5,15 @@ return [
     'default' => env('LDAP_CONNECTION', 'default'),
 
     'connections' => [
-
         'default' => [
-            'hosts' => [env('LDAP_HOST', 'ldap.example.com')],
-            'username' => env('LDAP_USERNAME', 'cn=admin,dc=example,dc=com'),
-            'password' => env('LDAP_PASSWORD', ''),
+            'hosts' => [env('LDAP_HOST', '10.20.30.5')],
             'port' => env('LDAP_PORT', 389),
-            'base_dn' => env('LDAP_BASE_DN', 'dc=example,dc=com'),
-            'timeout' => env('LDAP_TIMEOUT', 5),
-            'use_ssl' => env('LDAP_USE_SSL', false),
-            'use_tls' => env('LDAP_USE_TLS', false),
+            'base_dn' => env('LDAP_BASE_DN', 'dc=local,dc=pharma'),
+            'username' => env('LDAP_USERNAME', 'cn=glpi,dc=local,dc=pharma'),
+            'password' => env('LDAP_PASSWORD', 'pharma@2025'),
+            'timeout' => 5,
+            'use_ssl' => false,
+            'use_tls' => false,
         ],
 
     ],

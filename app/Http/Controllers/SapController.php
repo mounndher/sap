@@ -10,8 +10,9 @@ class SapController extends Controller
     public function getMaterials()
 {
    $url = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
-
-    $response = Http::withBasicAuth(env('SAP_USER'), env('SAP_PASS'))->get($url);
+        $username = env('SAP_USER', 'eriache');
+        $password = env('SAP_PASS', 'Mondher125');
+    $response = Http::withBasicAuth($username, $password)->get($url);
 
 
     if ($response->successful()) {
@@ -25,9 +26,10 @@ class SapController extends Controller
 public function showMaterials()
 {
     $url = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
-
-    $response = Http::withBasicAuth(env('SAP_USER'), env('SAP_PASS'))
-                    ->get($url);
+ $username = env('SAP_USER', 'eriache');
+        $password = env('SAP_PASS', 'Mondher125');
+    $response = Http::withBasicAuth($username, $password)->get($url);
+   
 
     if ($response->successful()) {
         $sapData = $response->json(); // Full JSON from SAP

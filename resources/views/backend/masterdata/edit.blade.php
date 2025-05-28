@@ -35,9 +35,7 @@
                             <li class="nav-item">
                                 <a href="#" class="nav-link" data-target="#form-achat">Achat</a>
                             </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link" data-target="#form-stock">Stock division</a>
-                            </li>
+
                             <li class="nav-item">
                                 <a href="#" class="nav-link" data-target="#form-comptabilite">Comptabilité</a>
                             </li>
@@ -57,14 +55,10 @@
 
                 </div>
 
-                <!-- Stock division form (hidden by default) -->
-                <div id="form-stock" class="settings-form d-none">
-                    <!-- Add your stock division content here -->
-                </div>
-
+                
                 <!-- Comptabilité form (hidden by default) -->
                 <div id="form-comptabilite" class="settings-form d-none">
-                    <!-- Add your comptabilité content here -->
+                     @include('backend.masterdata.sectionedit.cotabiliteedit')
                 </div>
 
                 <!-- Remove the old SEO form as it's not needed anymore -->

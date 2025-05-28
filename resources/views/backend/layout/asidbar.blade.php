@@ -22,6 +22,7 @@
               </ul>
             </li>
             <li><a class="nav-link" href="{{ route('articles.index') }}"><i class="far fa-square"></i> <span>Article Page</span></a></li>
+             <li><a class="nav-link" href="{{ route('typearticles.index') }}"><i class="far fa-square"></i> <span>Type d'Article Page</span></a></li>
 
 
 

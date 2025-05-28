@@ -28,24 +28,24 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+    public function store(Request $request)
+{
+    $request->validate([
+        'name' => ['required', 'string'],
+        'password' => ['required', 'string'],
+    ]);
+
+    $credentials = $request->only('name', 'password');
+
+    if (!Auth::attempt($credentials)) {
+        return back()->withErrors([
+            'name' => 'Invalid credentials.',
         ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
     }
+
+    $request->session()->regenerate();
+
+    return redirect()->intended(RouteServiceProvider::HOME);
+}
+
 }

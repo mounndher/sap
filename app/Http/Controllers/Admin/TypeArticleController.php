@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use \App\Models\TypeArticle;
+class TypeArticleController extends Controller
+{
+    //
+    public function index(){
+        $typeArticles =TypeArticle::all();
+        return view('backend.type_articles.index',compact('typeArticles'));
+    }
+    public function create(){
+        return view('backend.type_articles.create');
+    }
+    public function store(Request $request){
+        //dd($request->all());
+        $request->validate([
+            'value' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+        ]);
+        $typeArticle = new TypeArticle();
+        $typeArticle->value = $request->value;
+        $typeArticle->name = $request->name;
+        $typeArticle->status = $request->status; // Default to active if not provided
+        $typeArticle->save();
+        return redirect()->route('typearticles.index')->with([
+        'message' => 'typeArticle ajouter avec succès.',
+        'alert-type' => 'success',
+    ]);
+
+    }
+     public function edit($id){
+        $typeArticles= TypeArticle::findOrFail($id);
+        return view('backend.type_articles.edit', compact('typeArticles'));
+
+    }
+
+
+     public function update(Request $request, $id){
+        $request->validate([
+            'value' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+        ]);
+        $typeArticle = TypeArticle::findOrFail($id);
+        $typeArticle->value = $request->input('value');
+        $typeArticle->name = $request->input('name');
+        $typeArticle->save();
+        return redirect()->route('typearticles.index')->with('success', 'Type d\'article mis à jour avec succès.');
+
+    }
+
+
+     public function destroy(){
+        return view('backend.type_articles.index');
+    }
+
+}

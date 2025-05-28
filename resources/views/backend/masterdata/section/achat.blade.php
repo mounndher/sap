@@ -1,5 +1,5 @@
 <div class="card" id="settings-card">
-    <form id="setting-form" action="{{ route('articles.storeachat') }}" method="POST">
+    <form id="setting-form" action="# method="POST">
         @csrf
         <div class="card-header">
             <h4>Données de base</h4>
@@ -10,7 +10,7 @@
             <div class="form-group row align-items-center">
                 <label for="base-unit" class="form-control-label col-sm-3 text-md-right">Unité d'achat </label>
                 <div class="col-sm-6 col-md-9">
-                   <input type="hidden" name="article_id" value="{{ $article_id }}">
+
 
                     <input type="text" class="form-control" id="base-unit" list="unit-options" name="BSTME" value="{{ $article->achat->BSTME ?? '' }}">
 
