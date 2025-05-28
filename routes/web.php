@@ -73,7 +73,7 @@ Route::get('/ldap-test', function () {
 });
 Route::get('/ldap-login-test', function () {
     $credentials = [
-        'name' => 'glpi', // CN of LDAP user
+        'username' => 'glpi1', // CN of LDAP user
         'password' => 'pharma@2025', // User password
     ];
 

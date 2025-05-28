@@ -22,9 +22,9 @@ class User extends Authenticatable implements LdapAuthenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+       // 'name',
         'username',  // Add username since you use it for login
-        'email',
+        //'email',
         'password',
     ];
 

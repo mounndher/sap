@@ -72,7 +72,7 @@ return [
                    'name' => 'cn',                  // ✅ Nom complet
                 //'email' => 'mail',
             ],
-         'identifier' => 'name', // ✅ use email as login key
+         'identifier' => 'username', // ✅ use email as login key
 
         ],
     ],

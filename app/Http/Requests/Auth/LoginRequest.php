@@ -28,7 +28,7 @@ class LoginRequest extends FormRequest
     {
         return [
             //'email' => ['required', 'string', 'email'],
-            'name' => ['required', 'string'],
+            'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -43,7 +43,7 @@ class LoginRequest extends FormRequest
     $this->ensureIsNotRateLimited();
 
     $credentials = [
-        'name' => $this->input('name'), // using 'name' as identifier
+        'samaccountname' => $this->input('username'), // using 'name' as identifier
         'password' => $this->input('password'),
     ];
 
@@ -51,7 +51,7 @@ class LoginRequest extends FormRequest
         RateLimiter::hit($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'name' => trans('auth.failed'), // ✅ Display this in Blade
+            'username' => trans('auth.failed'), // ✅ Display this in Blade
         ]);
     }
 

@@ -41,6 +41,18 @@
 					<!--end::Logo-->
 					<!--begin::Wrapper-->
 					<div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
+                        @if ($errors->any())
+    <div style="color: red;">
+        <strong>Login failed:</strong> {{ $errors->first() }}
+    </div>
+@endif
+                        @error('name')
+    <div style="color: red;">{{ $message }}</div>
+@enderror
+
+@error('password')
+    <div style="color: red;">{{ $message }}</div>
+@enderror
 						<!--begin::Form-->
 						<form class="form w-100" novalidate="novalidate" method="POST" id="kt_sign_in_form" action="{{ route('login') }}">
                             @csrf
@@ -54,12 +66,12 @@
 							<!--begin::Input group-->
 							<div class="fv-row mb-10">
 								<!--begin::Label-->
-								<label class="form-label fs-6 fw-bolder text-dark">name</label>
+								<label class="form-label fs-6 fw-bolder text-dark">username</label>
 								<!--end::Label-->
 								<!--begin::Input-->
-								<input class="form-control form-control-lg form-control-solid" type="text" name="name" autocomplete="off" />
+								<input class="form-control form-control-lg form-control-solid" type="text" name="username" autocomplete="off" />
 
-                                <span class="text-danger">{{ $errors->first('name') }}</span>
+                                <span class="text-danger">{{ $errors->first('username') }}</span>
 								<!--end::Input-->
 							</div>
 							<!--end::Input group-->
