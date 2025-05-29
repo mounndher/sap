@@ -10,12 +10,12 @@
             <div class="form-group row align-items-center">
                 <label for="site-title" class="form-control-label col-sm-3 text-md-right">Désignation</label>
                 <div class="col-sm-6 col-md-9">
-                    <input type="text" class="form-control" id="site-title" list="designation-options" name="MAKTX" ">
+                    <input type="text" class="form-control" id="site-title" list="designation-options" name="MAKTX">
 
                     <datalist id="designation-options" name="MAKTX">
                         @if (!empty($materialsData))
                         @foreach ($materialsData as $item)
-                        <option value="{{ $item['Maktg'] }}"></option>
+                        <option value="{{ $item['MAKTX'] ?? $item['Maktg'] ?? '' }}"></option>
                         @endforeach
                         @else
                         <option value="No data available"></option>
@@ -24,19 +24,21 @@
                 </div>
             </div>
 
-            {{-- Unité de quantité de base (input with datalist) --}}
+
+
             <div class="form-group row align-items-center">
                 <label for="base-unit" class="form-control-label col-sm-3 text-md-right">Unité de quantité de base</label>
                 <div class="col-sm-6 col-md-9">
-                    <input type="text" class="form-control" id="base-unit" list="unit-options" name="MEINS">
-
-                    <datalist id="unit-options">
+                    <select class="form-control select2" name="MEINS" id="base-unit">
+                        <option disabled {{ empty(old('MEINS', $article->MEINS ?? '')) ? 'selected' : '' }}>Sélectionnez une unité</option>
                         @if (!empty($unitsData))
                         @foreach ($unitsData as $unit)
-                        <option value="{{ $unit['Mseh3'] }}">{{ $unit['Mseh3'] }}</option>
+                        <option value="{{ $unit['Mseh3'] }}" {{ (old('MEINS', $article->MEINS ?? '') == $unit['Mseh3']) ? 'selected' : '' }}>
+                            {{ $unit['Mseh3'] }}
+                        </option>
                         @endforeach
                         @endif
-                    </datalist>
+                    </select>
                 </div>
             </div>
 
@@ -45,88 +47,25 @@
                 <label for="type-article" class="form-control-label col-sm-3 text-md-right">type d'article</label>
                 <div class="col-sm-6 col-md-9">
                     <select class="form-control select2" name="MTART" id="type-article">
-                        <option disabled {{ empty(old('MTART', $article->MTART ?? '')) ? 'selected' : '' }}>Open this select menu</option>
-                        <option value="ZACD" >ZACD | Articles Conditionnement</option>
-                        <option value="ZAPR" >ZAPR | Articles Ext.Prestations</option>
-                        <option value="ZCNS" >ZCNS | Article non géré en stock</option>
-                        <option value="ZCNV" >ZCNV | Article non valorisé</option>
-                        <option value="ZCST" >ZCST | Matières et fourn.consom.</option>
-                        <option value="ZEMC" >ZEMC | Emballages (Cartons)</option>
-                        <option value="ZFMP" >ZFMP | </option>
-                        <option value="ZIMO" >ZIMO | Immobilisation</option>
-                        <option value="ZMPR" >ZMPR | Matière première</option>
-                        <option value="ZOUT" >ZOUT | Outilage</option>
-                        <option value="ZPDR" >ZPDR | Pièces de rechange</option>
-                        <option value="ZPRF" >ZPRF | Produit fini</option>
-                        <option value="ZPSF" >ZPSF | Produit semi-fini</option>
-                        <option value="ZSRV" >ZSRV | Prestation de services</option>
+                        <option disabled selected>Open this select menu</option>
+                        @foreach ($typearticle as $ty)
+                        <option value="{{ $ty->id }}">
+                            {{ $ty->name }}
+                        </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
 
-            {{-- Groupe d'articles (select) --}}
             <div class="form-group row align-items-center">
                 <label for="groupe-articles" class="form-control-label col-sm-3 text-md-right">Groupe d 'articles</label>
                 <div class="col-sm-6 col-md-9">
                     <select class="form-control select2" name="MATKL" id="groupe-articles">
-                        <option disabled {{ empty(old('MATKL', $article->MATKL ?? '')) ? 'selected' : '' }}>Open this select menu</option>
-
-                        <option value="ZACD-PRIM">ZACD-PRIM | Art. Cond. 1ere</option>
-                        <option value="ZACD-SECD" >ZACD-SECD | Art. Cond. 2ere</option>
-                        <option value="ZACD-TERT" {{ old('MATKL', $article->MATKL ?? '') == 'ZACD-TERT' ? 'selected' : '' }}>ZACD-TERT | Art. Cond. 3ere</option>
-                        <option value="ZCNS-ADM" {{ old('MATKL', $article->MATKL ?? '') == 'ZCNS-ADM' ? 'selected' : '' }}>ZCNS-ADM | Art. Nn Sto.cons ad</option>
-                        <option value="ZCNS-ADM" {{ old('MATKL', $article->MATKL ?? '') == 'ZCNS-ADM' ? 'selected' : '' }}>ZCNS-ADM | Art. Nn Sto.com</option>
-                        <option value="ZCNS-ENRG" {{ old('MATKL', $article->MATKL ?? '') == 'ZCNS-ENRG' ? 'selected' : '' }}>ZCNS-ENRG |Art. Nn Sto.Energies</option>
-                        <option value="ZCNS-LAB" {{ old('MATKL', $article->MATKL ?? '') == 'ZCNS-LAB' ? 'selected' : '' }}>ZCNS-LAB |Art. Nn Sto.cons lab</option>
-                        <option value="ZCNS-PROD" {{ old('MATKL', $article->MATKL ?? '') == 'ZCNS-PROD' ? 'selected' : '' }}>ZCNS-PROD |Art. Nn Sto.cons pro</option>
-                        <option value="ZCW-CON" {{ old('MATKL', $article->MATKL ?? '') == 'ZCW-CON' ? 'selected' : '' }}>ZCW-CON |Art. Nn Val.Conso</option>
-                        <option value="ZCW-EXC" >ZCW-EXC |Art. Nn Val.EXC</option>
-                        <option value="ZCW-PA" >ZCW-PA |Art. Nn Val.PA</option>
-                        <option value="ZCST-CANT" >ZCST-CANT| Cons. Four.cantine</option>
-                        <option value="ZCST-CONS" >ZCST-CONS | Cons. Four.cons ad</option>
-                        <option value="ZCST-DIVE" >ZCST-DIVE |Cons. Four.Divers</option>
-                        <option value="ZCST-FOUR" >ZCST-FOUR | Cons. Four.prod</option>
-                        <option value="ZEMC-EMBA" >ZEMC-EMBA | Emballages</option>
-                        <option value="ZFMP" >ZFMP</option>
-                        <option value="ZIMO" >ZIMO | Immobilisation</option>
-                        <option value="ZMPR" >ZMPR | Matière première</option>
-                        <option value="ZOUT" >ZOUT | Outilage</option>
-                        <option value="ZPDR" >ZPDR | Pièces de rechange</option>
-                        <option value="ZPRF" >ZPRF | Produit fini</option>
-                        <option value="ZPSF" >ZPSF | Produit semi-fini</option>
-                        <option value="ZSRV" >ZSRV | Prestation de services</option>
+                        <option disabled selected>Select a groupe</option>
                     </select>
                 </div>
             </div>
 
-             <div class="form-group row align-items-center">
-                <label for="base-unit" class="form-control-label col-sm-3 text-md-right">Groupe dacheteurs</label>
-                <div class="col-sm-6 col-md-9">
-
-                    <select class="form-control select2" name="EKGRP">
-                        <option>Open this select menu</option>
-
-                        <option value="G01">G01|MP Locale</option>
-                        <option value="G02">G02|MP Import</option>
-                        <option value="G03">G03|Cdtmnt Local</option>
-                        <option value="G04">G04|Cdtmnt Import</option>
-                        <option value="G05">G05|Labo Local</option>
-                        <option value="G06">G06|Labo Import</option>
-                        <option value="G07">G07|Consommable Local</option>
-                        <option value="G08">G08|Consommable Import</option>
-                        <option value="G09">G09|Service</option>
-                        <option value="G10">G10|PDR & Outilage Lo</option>
-                        <option value="G11">G11|PDR & Outilage Im</option>
-                        <option value="G12">G12|Parc Roulant</option>
-                        <option value="G13">G13|Investissement</option>
-                        <option value="G14">G14|Sous-traitance</option>
-                    </select>
-
-
-
-
-                </div>
-            </div>
             {{-- Gestion de lots (checkbox) --}}
             <div class="form-group row align-items-center">
                 <label for="base-unit" class="form-control-label col-sm-3 text-md-right">Gestion de lots</label>
@@ -149,11 +88,13 @@
 
         <div class="card-footer bg-whitesmoke text-md-right">
             <button class="btn btn-primary" type="submit">Enregistrer</button>
+
+            <button class="btn btn-success" type="submit">Valider</button>
         </div>
     </form>
 
 </div>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @push('scripts')
 <script>
     $(document).ready(function() {
@@ -215,6 +156,35 @@
                     }
                 }
             });
+        });
+    });
+
+
+    $(document).ready(function() {
+        $('#type-article').on('change', function() {
+            var typeArticleId = $(this).val();
+
+            if (typeArticleId) {
+                $.ajax({
+                    url: '/groupe-articles/' + typeArticleId
+                    , type: 'GET'
+                    , dataType: 'json'
+                    , success: function(data) {
+                        $('#groupe-articles').empty();
+                        $('#groupe-articles').append('<option disabled selected>Select a groupe</option>');
+                        $.each(data, function(key, groupe) {
+                            $('#groupe-articles').append('<option value="' + groupe.value + '">' + groupe.name + '</option>');
+                        });
+                    }
+                    , error: function() {
+                        $('#groupe-articles').empty();
+                        $('#groupe-articles').append('<option disabled selected>Error loading groupes</option>');
+                    }
+                });
+            } else {
+                $('#groupe-articles').empty();
+                $('#groupe-articles').append('<option disabled selected>Select a groupe</option>');
+            }
         });
     });
 

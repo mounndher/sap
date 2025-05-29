@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Achat;
+use App\Models\GroupeArticle;
+use App\Models\TypeArticle;
+use App\Models\UserSap;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -20,23 +24,31 @@ class ArticleController extends Controller
     {
         // Fetch SAP data
 
-        $username = env('SAP_USER', 'eriache');
-        $password = env('SAP_PASS', 'Mondher125');
+        $userSap = UserSap::first(); // Assuming you have a UserSap model to fetch SAP credentials
+        if (!$userSap) {
+            return view('backend.masterdata.create', ['materialsData' => null, 'error' => 'SAP user credentials not found']);
+        }
+
+        // Use the credentials from the UserSap model
+        $username = $userSap->username;
+
+        $password = Crypt::decryptString($userSap->password);
         $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
         $t006aUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/t006aSet?\$format=json";
 
         $materialsResponse = Http::withBasicAuth($username, $password)->get($maktUrl);
         $materialsData = $materialsResponse->successful() ? $materialsResponse->json()['d']['results'] ?? [] : null;
-
+         //dd($materialsData);
         $unitsResponse = Http::withBasicAuth($username, $password)->get($t006aUrl);
         $unitsData = $unitsResponse->successful() ? $unitsResponse->json()['d']['results'] ?? [] : null;
 
-
+       $typearticle=TypeArticle::where('status', 1)->get();
 
 
         return view('backend.masterdata.create', [
             'materialsData' => $materialsData,
             'unitsData' => $unitsData,
+            'typearticle' => $typearticle,
             'error' => (!$materialsData || !$unitsData) ? 'One or more datasets failed to load' : null,
 
 
@@ -50,7 +62,7 @@ class ArticleController extends Controller
             'MATKL' => 'required|string|max:9',
             'MEINS' => 'required',
             'XCHPF' => 'required',
-            'EKGRP' => 'required',
+           // 'EKGRP' => 'required',
         ]);
 
         $exists = Article::where('MAKTX', $request->MAKTX)->first();
@@ -68,7 +80,7 @@ class ArticleController extends Controller
         $article->MEINS = $request->MEINS;
         $article->XCHPF = $request->XCHPF;
         $article->MAKTX = $request->MAKTX;
-        $article->EKGRP = $request->EKGRP;
+        //$article->EKGRP = $request->EKGRP;
         $article->save();
 
         // Redirect to create with article_id and step=achat to show Achat tab
@@ -197,4 +209,13 @@ class ArticleController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Unable to delete this article.']);
         }
     }
+
+
+    public function getGroupes($typeArticleId)
+{
+    $groupes = GroupeArticle::where('type_article_id', $typeArticleId)->get();
+
+    // Return JSON response
+    return response()->json($groupes);
+}
 }

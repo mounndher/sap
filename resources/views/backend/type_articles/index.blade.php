@@ -29,6 +29,7 @@
                                         <th>#</th>
                                         <th>value</th>
                                         <th>nom</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -38,6 +39,11 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $typeArticle->value }}</td>
                                         <td>{{ $typeArticle->name }}</td>
+                                        <th> @if($typeArticle->status == '1')
+                                            <div class="badge badge-success">Active</div>
+                                            @else
+                                            <div class="badge badge-danger">Not Active</div>
+                                            @endif</th>
                                         <td>
                                             <a href="{{ route('typearticles.edit',$typeArticle->id) }}" class="btn btn-primary">
                                                 <i class="fas fa-edit"></i>
