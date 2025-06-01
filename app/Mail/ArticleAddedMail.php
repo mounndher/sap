@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 class ArticleAddedMail extends Mailable
 {
     use Queueable, SerializesModels;
- public $article;
+    public $article;
     /**
      * Create a new message instance.
      */

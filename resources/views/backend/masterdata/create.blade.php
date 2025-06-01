@@ -1,14 +1,14 @@
 @extends('backend.layout.master')
 @section('content')
 @if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Veuillez corriger les erreurs suivantes :</strong>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
+<div class="alert alert-danger">
+    <strong>Veuillez corriger les erreurs suivantes :</strong>
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
 @endif
 
 <section class="section">
@@ -40,13 +40,19 @@
                     <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="settings-tabs">
                             <li class="nav-item">
-                                <a href="#" class="nav-link active" data-target="#form-general">Données de base</a>
+                                <a href="#" class="nav-link active" data-target="#form-general">
+                                    Données de base
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link" data-target="#form-achat">Achat</a>
+                                <a href="#" class="nav-link" data-target="#form-achat">
+                                    Achat
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link" data-target="#form-comptabilite">Comptabilité</a>
+                                <a href="#" class="nav-link" data-target="#form-comptabilite">
+                                    Comptabilité
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -80,26 +86,25 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('#settings-tabs .nav-link');
-  const forms = document.querySelectorAll('.settings-form');
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('#settings-tabs .nav-link');
+        const forms = document.querySelectorAll('.settings-form');
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      const target = tab.getAttribute('data-target');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = tab.getAttribute('data-target');
 
-      
 
-      tabs.forEach(t => t.classList.remove('active'));
-      forms.forEach(f => f.classList.add('d-none'));
 
-      tab.classList.add('active');
-      document.querySelector(target).classList.remove('d-none');
+                tabs.forEach(t => t.classList.remove('active'));
+                forms.forEach(f => f.classList.add('d-none'));
+
+                tab.classList.add('active');
+                document.querySelector(target).classList.remove('d-none');
+            });
+        });
     });
-  });
-});
+
 </script>
 @endpush
-
-

@@ -74,6 +74,20 @@
             <span>Setting Ldap Page</span>
         </a>
     </li>
+    <li class="dropdown {{ setSidebarActive(['mail_settings.*', 'mail_recipients.*', 'layout-top-navigation']) }}">
+        <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+            <i class="fas fa-columns"></i>
+            <span>Email</span>
+        </a>
+        <ul class="dropdown-menu">
+            <li class="{{ request()->routeIs('mail_settings.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('mail_settings.index') }}">Smtp Setting</a>
+        </li>
+            <li><a class="nav-link "
+                href="{{ route('mail_recipients.index') }}">Email user</a></li>
+
+        </ul>
+    </li>
 
     <li class="">
         <a class="nav-link" href="{{ route('users.index') }}">

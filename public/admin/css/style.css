@@ -1025,7 +1025,7 @@ table tr:hover .table-links {
 
 /* 3.9 Nav */
 .nav-tabs .nav-item .nav-link {
-  color: #528566
+  color: #3abaf4
 ; }
   .nav-tabs .nav-item .nav-link.active {
     color: #000; }
@@ -1048,12 +1048,32 @@ table tr:hover .table-links {
 ;
   padding-left: 15px !important;
   padding-right: 15px !important; }
-  .nav-pills .nav-item .nav-link:hover {
-    background-color: #f6f7fe; }
+
+
+ .nav-pills .nav-link.valid {
+        color: #fff;
+        background-color: #28a745; /* Green for valid */
+    }
+
+    .nav-pills .nav-link.invalid {
+        color: #fff;
+        background-color: #dc3545; /* Red for invalid */
+    }
+
+    .nav-pills .nav-link.in-progress {
+        color: #fff;
+        background-color: #fd7e14; /* Orange for in progress */
+    }
+
+    /* Hover effects */
+    .nav-pills .nav-item .nav-link:hover {
+        background-color: #f6f7fe;
+    }
+
   .nav-pills .nav-item .nav-link.active {
     box-shadow: 0 2px 6px #acb5f6;
     color: #fff;
-    background-color: #528566
+    background-color: #3abaf4
 ; }
   .nav-pills .nav-item .nav-link .badge {
     padding: 5px 8px;

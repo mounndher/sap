@@ -75,14 +75,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/groupeacheteurs/{groupeAcheteur}', [App\Http\Controllers\Admin\GroupeAcheteurcontroller::class, 'destroy'])->name('groupeacheteurs.destroy');
 
 
-    ///LDAP sETTING rOUTE//////////////////////////////////////////////////////////////
-    Route::get('Ldapsetting', [SettingLdapController::class, 'index'])->name('Ldapsetting.index');
-    Route::post('Ldapsetting/update/{id}', [SettingLdapController::class, 'update'])->name('Ldapsetting.update');
-    ////////////  USER ROUTES //////////////////////////////////////////////////////////////
-    Route::get('users',[UserController::class,'index'])->name('users.index');
-     ///////user sap routes///////////////////////////////////////////////////////////////
-    Route::get('usersap', [UserSapController::class, 'index'])->name('usersap.index');
-    Route::post('usersap/update/{id}', [UserSapController::class, 'update'])->name('usersap.update');
 
      // Route classv
      Route::get('classv', [App\Http\Controllers\Admin\ClassvController::class, 'index'])->name('classvs.index');
@@ -91,6 +83,28 @@ Route::middleware('auth')->group(function () {
     Route::get('classv/edit/{id}', [App\Http\Controllers\Admin\ClassvController::class, 'edit'])->name('classvs.edit');
     Route::post('classv/update/{id}', [App\Http\Controllers\Admin\ClassvController::class, 'update'])->name('classvs.update');
     Route::delete('/classv/{classv}', [App\Http\Controllers\Admin\ClassvController::class, 'destroy'])->name('classvs.destroy');
+
+
+    ///LDAP sETTING rOUTE//////////////////////////////////////////////////////////////
+    Route::get('Ldapsetting', [SettingLdapController::class, 'index'])->name('Ldapsetting.index');
+    Route::post('Ldapsetting/update/{id}', [SettingLdapController::class, 'update'])->name('Ldapsetting.update');
+    ////////////  USER ROUTES //////////////////////////////////////////////////////////////
+    Route::get('users',[UserController::class,'index'])->name('users.index');
+     ///////user sap routes///////////////////////////////////////////////////////////////
+    Route::get('usersap', [UserSapController::class, 'index'])->name('usersap.index');
+    Route::post('usersap/update/{id}', [UserSapController::class, 'update'])->name('usersap.update');
+    ///////mail settings routes///////////////////////////////////////////////////////////////
+    Route::get('mail_settings', [App\Http\Controllers\Admin\Mail_settingsContoller::class, 'index'])->name('mail_settings.index');
+    Route::post('mail_settings/update/{id}', [App\Http\Controllers\Admin\Mail_settingsContoller::class, 'update'])->name('mail_settings.update');
+
+    //////////// mail recipients routes //////////////////////////////////////////////////////////////
+    Route::get('mail_recipients', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'index'])->name('mail_recipients.index');
+    Route::get('mail_recipients/create', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'create'])->name('mail_recipients.create');
+    Route::post('mail_recipients/store', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'store'])->name('mail_recipients.store');
+    Route::get('mail_recipients/edit/{id}', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'edit'])->name('mail_recipients.edit');
+    Route::post('mail_recipients/update/{id}', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'update'])->name('mail_recipients.update');
+    Route::delete('/mail_recipients/{mail_recipient}', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'destroy'])->name('mail_recipients.destroy');
+
 
 });
 // routes/web.php
@@ -104,6 +118,22 @@ Route::get('/ldap-test', function () {
         return '✅ Connexion LDAP réussie !';
     } catch (\Exception $e) {
         return '❌ Erreur : ' . $e->getMessage();
+    }
+});
+
+
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-email', function () {
+    try {
+        Mail::raw('This is a test email from SAP Master Data.', function ($message) {
+            $message->to('m.tebib@pharmainvest.dz') // replace with a real email to receive the test
+                    ->subject('Test Email from Laravel');
+        });
+
+        return '✅ Email sent successfully!';
+    } catch (\Exception $e) {
+        return '❌ Failed to send email: ' . $e->getMessage();
     }
 });
 

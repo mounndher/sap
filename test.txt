@@ -1,0 +1,8 @@
+MAIL_MAILER=smtp                             # Le driver utilisé pour l’envoi des emails (ici SMTP)
+MAIL_HOST=smtp.gmail.com                    # L’hôte SMTP de Gmail
+MAIL_PORT=587                               # Le port utilisé par Gmail avec TLS (STARTTLS)
+MAIL_USERNAME=bilal.si.nacer.4u@gmail.com   # Votre adresse Gmail (utilisée pour l’authentification)
+MAIL_PASSWORD=lixhniqvndftcuam              # Le mot de passe d’application généré dans Gmail (PAS le mot de passe Gmail habituel)
+MAIL_ENCRYPTION=tls                         # Le chiffrement utilisé pour sécuriser la connexion (TLS recommandé avec port 587)
+MAIL_FROM_ADDRESS=bilal.si.nacer.4u@gmail.com  # L’adresse email utilisée comme expéditeur
+MAIL_FROM_NAME="SAP Master Data"

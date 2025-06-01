@@ -12,6 +12,7 @@ use App\Models\UserSap;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use App\Mail\ArticleAddedMail;
+use App\Models\Mail_recipients;
 use Illuminate\Support\Facades\Mail;
 class ArticleController extends Controller
 {
@@ -88,7 +89,21 @@ class ArticleController extends Controller
         //dd($article);
 
         // Redirect to create with article_id and step=achat to show Achat tab
-        Mail::to('pip.it.support@pharmainvest.dz')->send(new ArticleAddedMail($article));
+
+          // ✅ Fetch all recipient emails $recipients = Mail_recipient::where('status', 1)->pluck('email')->toArray();
+
+        $recipients = Mail_recipients::where('status', 1)->pluck('email')->toArray();
+        // Send email to all recipients
+       if (count($recipients) > 0) {
+            Mail::to($recipients)->send(new ArticleAddedMail($article));
+        } else {
+            // Handle case where no recipients are found
+            return redirect()->back()->with([
+                'message' => 'Aucun destinataire trouvé pour l\'envoi de l\'email.',
+                'alert-type' => 'warning',
+            ]);
+        }
+
        return redirect()->route('articles.index',$article->id);
     }
 

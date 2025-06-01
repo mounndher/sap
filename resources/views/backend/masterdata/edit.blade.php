@@ -27,17 +27,22 @@
                     <div class="card-header">
                         <h4>View</h4>
                     </div>
-                    <div class="card-body">
+                     <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="settings-tabs">
                             <li class="nav-item">
-                                <a href="#" class="nav-link active" data-target="#form-general">Données de base</a>
+                                <a href="#" class="nav-link active @if($articles->status == '1') valid @elseif($articles->status == '0') invalid @elseif($article->status == 'in_progress') in-progress @endif" data-target="#form-general">
+                                    Données de base
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link" data-target="#form-achat">Achat</a>
+                                <a href="#" class="nav-link @if($articles->status == 'valid') valid @elseif($articles->status == 'invalid') invalid @elseif($articles->status == 'in_progress') in-progress @endif" data-target="#form-achat">
+                                    Achat
+                                </a>
                             </li>
-
                             <li class="nav-item">
-                                <a href="#" class="nav-link" data-target="#form-comptabilite">Comptabilité</a>
+                                <a href="#" class="nav-link @if($articles->status == 'valid') valid @elseif($articles->status == 'invalid') invalid @elseif($articles->status == 'in_progress') in-progress @endif" data-target="#form-comptabilite">
+                                    Comptabilité
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -55,7 +60,7 @@
 
                 </div>
 
-                
+
                 <!-- Comptabilité form (hidden by default) -->
                 <div id="form-comptabilite" class="settings-form d-none">
                      @include('backend.masterdata.sectionedit.cotabiliteedit')
