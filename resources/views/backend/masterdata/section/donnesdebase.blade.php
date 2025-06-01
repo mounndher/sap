@@ -1,24 +1,26 @@
 <div class="card" id="settings-card">
-    <form id="setting-form" action="{{ route('typearticles.store') }}" method="POST">
+    <form id="ajax-article-form" action="{{ route('articles.store') }}" method="POST">
         @csrf
         <div class="card-header">
             <h4>Données de base</h4>
         </div>
         <div class="card-body">
 
+
+            <input type="hidden" name="status" value="0">
+
             {{-- Désignation (input with datalist) --}}
-            <div class="form-group row align-items-center">
+           <div class="form-group row align-items-center">
                 <label for="site-title" class="form-control-label col-sm-3 text-md-right">Désignation</label>
                 <div class="col-sm-6 col-md-9">
                     <input type="text" class="form-control" id="site-title" list="designation-options" name="MAKTX">
-
-                    <datalist id="designation-options" name="MAKTX">
+                    <datalist id="designation-options">
                         @if (!empty($materialsData))
-                        @foreach ($materialsData as $item)
-                        <option value="{{ $item['MAKTX'] ?? $item['Maktg'] ?? '' }}"></option>
-                        @endforeach
+                            @foreach ($materialsData as $item)
+                                <option value="{{ $item['MAKTX'] ?? $item['Maktg'] ?? '' }}"></option>
+                            @endforeach
                         @else
-                        <option value="No data available"></option>
+                            <option value="No data available"></option>
                         @endif
                     </datalist>
                 </div>
@@ -95,72 +97,36 @@
 
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+<!-- jQuery (already included if you used it before) -->
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 @push('scripts')
 <script>
+
+
+        // Liste des désignations SAP existantes (MAKTX + Maktg si disponible)
+
+
+
+
+
     $(document).ready(function() {
-        $('#setting-form').on('submit', function(e) {
-            console.log('submit triggered');
-            const fields = ['MAKTX', 'MTART', 'MATKL'];
-            let isValid = true;
+        const existingMaterials = @json(
+            collect($materialsData)->pluck('MAKTX')->merge(collect($materialsData)->pluck('Maktg'))->filter()->unique()->values()
+        );
 
-            fields.forEach(function(name) {
-                const val = $(this).find(`[name="${name}"]`).val();
-                console.log(`Checking ${name}:`, val);
-                if (!val || val.trim() === '') {
-                    isValid = false;
-                }
-            }, this);
-
-            if (!isValid) {
-                console.log('Invalid form, preventing submit');
+        // Vérifier si la désignation est déjà dans SAP
+        $('#ajax-article-form').on('submit', function (e) {
+            const designation = $('#site-title').val().trim();
+            if (existingMaterials.includes(designation)) {
                 e.preventDefault();
-                alert("Veuillez remplir tous les champs Données de base.");
+                toastr.error('Cet article existe déjà dans SAP S4/Hana .', 'Erreur');
             }
         });
-    });
 
-    $(document).ready(function() {
-        $('#setting-form').on('submit', function(e) {
-            e.preventDefault(); // Prevent normal form submit (no reload)
-
-            const form = this;
-
-            $.ajax({
-                url: $(form).attr('action')
-                , method: $(form).attr('method')
-                , data: $(form).serialize()
-                , success: function(response) {
-                    if (response.status === 'success') {
-                        alert(response.message);
-
-                        // Update articles list with new HTML from server
-                        //$('#articles-list').html(response.html);
-
-                        // Reset form fields
-                        form.reset();
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                }
-                , error: function(xhr) {
-                    if (xhr.status === 422) {
-                        // Validation errors from Laravel
-                        let errors = xhr.responseJSON.errors;
-                        let errorMessages = '';
-                        for (let key in errors) {
-                            errorMessages += errors[key].join(', ') + '\n';
-                        }
-                        alert(errorMessages);
-                    } else {
-                        alert('An unexpected error occurred.');
-                    }
-                }
-            });
-        });
-    });
-
-
-    $(document).ready(function() {
         $('#type-article').on('change', function() {
             var typeArticleId = $(this).val();
 
@@ -187,6 +153,8 @@
             }
         });
     });
+
+
 
 </script>
 @endpush

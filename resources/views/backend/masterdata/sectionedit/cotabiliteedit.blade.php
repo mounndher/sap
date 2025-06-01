@@ -1,5 +1,5 @@
 <div class="card" id="settings-card">
-    <form method="POST" id="setting-form" action="{{ route('articles.Comptabilite',$articles->id) }}">
+    <form method="POST" id="setting-form" action="">
         @csrf
 
         <div class="card-header">

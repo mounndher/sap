@@ -89,13 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const target = tab.getAttribute('data-target');
 
-      if (target !== "#form-general") {
-        const requiredField = document.querySelector('#form-general input[name="MAKTX"]');
-        if (!requiredField || requiredField.value.trim() === '') {
-          alert("Veuillez remplir le champ Données de base avant de continuer.");
-          return;
-        }
-      }
+      
 
       tabs.forEach(t => t.classList.remove('active'));
       forms.forEach(f => f.classList.add('d-none'));

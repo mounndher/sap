@@ -31,8 +31,8 @@
                                         <th>Unité de quantité de base</th> {{-- MEINS --}}
                                         <th>Type d'article</th> {{-- MTART --}}
                                         <th>Gestion de lot</th> {{-- XCHPF --}}
-                                        <th>Groupe d'achats</th> {{-- EKGRP --}}
-                                        <th>Status</th>
+
+                                        <th>Status Données de base</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -42,7 +42,7 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $article->MAKTX }}</td>
                                         <td>{{ $article->MEINS }}</td>
-                                        <td>{{ $article->MTART }}</td>
+                                      <td> {{ $article->typeArticle->name }}</td>
                                         <td>
                                             @if($article->XCHPF == '1')
                                             <div class="badge badge-success">Active</div>
@@ -50,8 +50,17 @@
                                             <div class="badge badge-danger">Not Active</div>
                                             @endif
                                         </td>
-                                        <td>{{ $article->EKGRP }}</td>
-                                         <td><div class="badge badge-info">Completed</div></td>
+
+                                         <td>
+                                              @if($article->status == '1')
+                                            <div class="badge badge-success">Valide</div>
+                                            @else
+                                            <div class="badge badge-danger">InValide</div>
+                                            @endif
+
+
+
+                                        </td>
                                         <td>
                                               <a href="{{ route('articles.edit',$article->id) }}" class="btn btn-primary">
                                         <i class="fas fa-edit"></i>

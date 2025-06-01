@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     use HasFactory;
- 
+
 
     protected $fillable = [
         'MAKTX',
@@ -20,6 +20,12 @@ class Article extends Model
         'BSTME',
         'BKLAS',
         'VPRSV_1',
+        'status',
     ];
+  public function typeArticle()
+{
+    return $this->belongsTo(TypeArticle::class, 'MTART', 'id');
+}
+
 }
 

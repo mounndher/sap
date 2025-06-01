@@ -11,13 +11,16 @@ use App\Models\TypeArticle;
 use App\Models\UserSap;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
-
+use App\Mail\ArticleAddedMail;
+use Illuminate\Support\Facades\Mail;
 class ArticleController extends Controller
 {
     //
     public function index()
     {
-        $articles = Article::all();
+        $articles = Article::with('typeArticle')->get();
+
+
         return view('backend.masterdata.index', compact('articles'));
     }
     public function create(Request $request)
@@ -80,11 +83,13 @@ class ArticleController extends Controller
         $article->MEINS = $request->MEINS;
         $article->XCHPF = $request->XCHPF;
         $article->MAKTX = $request->MAKTX;
-        //$article->EKGRP = $request->EKGRP;
+        $article->status = $request->status ?? 0;
         $article->save();
+        //dd($article);
 
         // Redirect to create with article_id and step=achat to show Achat tab
-       return redirect()->route('articles.index')->with('article_id', $article->id);
+        Mail::to('pip.it.support@pharmainvest.dz')->send(new ArticleAddedMail($article));
+       return redirect()->route('articles.index',$article->id);
     }
 
 
@@ -98,6 +103,7 @@ class ArticleController extends Controller
         $articles = Article::findOrFail($id);
          $username = env('SAP_USER', 'eriache');
         $password = env('SAP_PASS', 'Mondher125');
+
         $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
 
         // Second URL - T006ASet (Units)
@@ -116,8 +122,10 @@ class ArticleController extends Controller
             : null;
 
         // Send both datasets to the view
+        $typearticle=TypeArticle::where('status', 1)->get();
         return view('backend.masterdata.edit', compact('articles'), [
             'materialsData' => $materialsData,
+            'typearticle'=>$typearticle,
             'unitsData' => $unitsData,
             'error' => (!$materialsData || !$unitsData) ? 'One or more datasets failed to load' : null
         ]);
@@ -130,11 +138,11 @@ class ArticleController extends Controller
         'MATKL' => 'required|string|max:9',
         'MEINS' => 'required',
         'XCHPF' => 'required',
-        'EKGRP' => 'required',
+        //'EKGRP' => 'required',
     ]);
 
     $article = Article::findOrFail($id);
-
+    $typearticle=TypeArticle::where('status', 1)->get();
     // Check for uniqueness of MAKTX only if it's changed
     if ($request->MAKTX !== $article->MAKTX) {
         $exists = Article::where('MAKTX', $request->MAKTX)->first();
@@ -151,7 +159,7 @@ class ArticleController extends Controller
     $article->MEINS = $request->MEINS;
     $article->XCHPF = $request->XCHPF;
     $article->MAKTX = $request->MAKTX;
-     $article->EKGRP = $request->EKGRP; // uncomment if needed
+    // $article->EKGRP = $request->EKGRP; // uncomment if needed
     $article->save();
 
     return redirect()->route('articles.index')->with([
@@ -218,4 +226,16 @@ class ArticleController extends Controller
     // Return JSON response
     return response()->json($groupes);
 }
+public function validerdonnesdebase($id)
+{
+    $article = Article::findOrFail($id);
+    $article->status = 1;
+    $article->save();
+
+    return response()->json([
+        'message' => 'Données de base validées avec succès.'
+    ]);
+}
+
+
 }
