@@ -109,43 +109,99 @@ class ArticleController extends Controller
     }
 
 
+public function edit($id)
+{
+    $article = Article::findOrFail($id);
+    $username = env('SAP_USER', 'eriache');
+    $password = env('SAP_PASS', 'Mondher125');
 
+    // SAP API endpoints
+    $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
+    $t006aUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/t006aSet?\$format=json";
 
-
-
-
-    public function edit($id)
-    {
-        $articles = Article::findOrFail($id);
-         $username = env('SAP_USER', 'eriache');
-        $password = env('SAP_PASS', 'Mondher125');
-
-        $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
-
-        // Second URL - T006ASet (Units)
-        $t006aUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/t006aSet?\$format=json";
-
-        // Fetch materials data
-        $materialsResponse = Http::withBasicAuth( $username, $password)->get($maktUrl);
+    // Fetch materials data with error handling
+    try {
+        $materialsResponse = Http::withBasicAuth($username, $password)
+                                ->timeout(30)
+                                ->get($maktUrl);
         $materialsData = $materialsResponse->successful()
             ? $materialsResponse->json()['d']['results'] ?? []
-            : null;
+            : [];
+    } catch (\Exception $e) {
+        $materialsData = [];
+        Log::error('Failed to fetch materials data: ' . $e->getMessage());
+    }
 
-        // Fetch units data
-        $unitsResponse = Http::withBasicAuth($username, $password)->get($t006aUrl);
+    // Fetch units data with error handling
+    try {
+        $unitsResponse = Http::withBasicAuth($username, $password)
+                           ->timeout(30)
+                           ->get($t006aUrl);
         $unitsData = $unitsResponse->successful()
             ? $unitsResponse->json()['d']['results'] ?? []
-            : null;
-
-        // Send both datasets to the view
-        $typearticle=TypeArticle::where('status', 1)->get();
-        return view('backend.masterdata.edit', compact('articles'), [
-            'materialsData' => $materialsData,
-            'typearticle'=>$typearticle,
-            'unitsData' => $unitsData,
-            'error' => (!$materialsData || !$unitsData) ? 'One or more datasets failed to load' : null
-        ]);
+            : [];
+    } catch (\Exception $e) {
+        $unitsData = [];
+        Log::error('Failed to fetch units data: ' . $e->getMessage());
     }
+
+    // Get active article types
+    $typearticle = TypeArticle::where('status', 1)->get();
+
+    // Get groups for the article's current type
+    $groupes = [];
+    if ($article->MTART) {
+        $groupes = GroupeArticle::where('type_article_id', $article->MTART)->get();
+    }
+
+    return view('backend.masterdata.edit', [
+        'articles' => $article, // Keeping your original variable name
+        'materialsData' => $materialsData,
+        'typearticle' => $typearticle,
+        'groupes' => $groupes,
+        'unitsData' => $unitsData,
+        'error' => (empty($materialsData) || empty($unitsData)
+            ? 'One or more datasets failed to load'
+            : null)
+    ]);
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function updateDonnesdebase(Request $request, $id)
 {
     $request->validate([
@@ -242,6 +298,22 @@ class ArticleController extends Controller
     // Return JSON response
     return response()->json($groupes);
 }
+
+public function getGroupesByType(Request $request)
+{
+    $typeId = $request->input('type_id');
+
+    if (!$typeId) {
+        return response()->json([]);
+    }
+
+    $groupes = GroupeArticle::where('type_article_id', $typeId)->get();
+
+    return response()->json($groupes);
+}
+
+
+
 public function validerdonnesdebase($id)
 {
     $article = Article::findOrFail($id);

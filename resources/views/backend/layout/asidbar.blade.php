@@ -85,7 +85,7 @@
                 </li>
                 <li><a class="nav-link " href="{{ route('mail_recipients.index') }}">Email user</a></li>
 
-                <li><a class="nav-link " href="{{ route('mail_recipients.index') }}">Email template validtion</a></li>
+                <li><a class="nav-link " href="{{ route('template_email_validation.index') }}">Email template validtion</a></li>
 
             </ul>
         </li>

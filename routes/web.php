@@ -47,7 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
     Route::post('articles/validerdonnesdebase/{id}', [ArticleController::class, 'validerdonnesdebase'])->name('articles.validerdonnesdebase');
     //////////// get groupe article by type article use ajax
-    Route::get('/groupe-articles/{typeArticleId}', [ArticleController::class, 'getGroupes']);
+    Route::get('/groupe-articles/{typeId}', [ArticleController::class, 'getGroupesByType']);
+    Route::get('/groupe-articless/{typeArticleId}', [ArticleController::class, 'getGroupes']);
+
+    Route::post('/get-groupes-by-type', [ArticleController::class, 'getGroupesByType'])->name('get.groupes.by.type');
     /////////// type article////////////////////////////////////////////////////////////
     Route::get('typearticles', [TypeArticleController::class, 'index'])->name('typearticles.index');
     Route::get('typearticles/create', [TypeArticleController::class, 'create'])->name('typearticles.create');

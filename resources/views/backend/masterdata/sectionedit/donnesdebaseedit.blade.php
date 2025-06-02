@@ -151,5 +151,47 @@
             button.prop('disabled', false).text('Valider');
         });
     });
+
+    $(document).ready(function () {
+    function loadGroupes(typeId, selectedValue = null) {
+        if (!typeId) return;
+
+        axios.post("{{ route('get.groupes.by.type') }}", {
+            type_id: typeId
+        }, {
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        })
+        .then(response => {
+            const groupes = response.data;
+            const select = $('#groupe-articles');
+            select.empty();
+            select.append(`<option value="">Choisir un groupe</option>`);
+            groupes.forEach(groupe => {
+                select.append(
+                    `<option value="${groupe.id}" ${selectedValue == groupe.id ? 'selected' : ''}>${groupe.name}</option>`
+                );
+            });
+        })
+        .catch(error => {
+            console.error('Erreur de chargement des groupes:', error);
+            toastr.error("Échec de chargement des groupes.");
+        });
+    }
+
+    // Lors du changement de type
+    $('#mtart').change(function () {
+        const typeId = $(this).val();
+        loadGroupes(typeId);
+    });
+
+    // ✅ Charger automatiquement si MTART est déjà défini (utile pour le mode édition)
+    const initialType = $('#mtart').val();
+    const selectedGroupId = "{{ $articles->MATKL }}";
+    if (initialType) {
+        loadGroupes(initialType, selectedGroupId);
+    }
+});
 </script>
 @endpush

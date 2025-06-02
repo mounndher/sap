@@ -15,7 +15,11 @@ class Mail_recipientsController extends Controller
         $mailRecipients=Mail_recipients::all();
         return view('backend.mail_recipients.index',compact('mailRecipients'));
     }
-    
+    public function create()
+    {
+        // Logic to show form for creating a new mail recipient
+        return view('backend.mail_recipients.create');
+    }
 
     public function store(Request $request)
     {

@@ -27,5 +27,10 @@ class Article extends Model
     return $this->belongsTo(TypeArticle::class, 'MTART', 'id');
 }
 
+  public function groupeArticle()
+{
+    return $this->belongsTo(GroupeArticle::class, 'MATKL', 'id');
+}
+
 }
 

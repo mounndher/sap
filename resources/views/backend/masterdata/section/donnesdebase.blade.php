@@ -6,21 +6,19 @@
         </div>
         <div class="card-body">
 
-
-            <input type="hidden" name="status" value="0">
-
             {{-- Désignation (input with datalist) --}}
-           <div class="form-group row align-items-center">
+            <div class="form-group row align-items-center">
                 <label for="site-title" class="form-control-label col-sm-3 text-md-right">Désignation</label>
                 <div class="col-sm-6 col-md-9">
                     <input type="text" class="form-control" id="site-title" list="designation-options" name="MAKTX">
-                    <datalist id="designation-options">
+
+                    <datalist id="designation-options" name="MAKTX">
                         @if (!empty($materialsData))
-                            @foreach ($materialsData as $item)
-                                <option value="{{ $item['MAKTX'] ?? $item['Maktg'] ?? '' }}"></option>
-                            @endforeach
+                        @foreach ($materialsData as $item)
+                        <option value="{{ $item['MAKTX'] ?? $item['Maktg'] ?? '' }}"></option>
+                        @endforeach
                         @else
-                            <option value="No data available"></option>
+                        <option value="No data available"></option>
                         @endif
                     </datalist>
                 </div>
@@ -107,32 +105,14 @@
 <script>
 
 
-        // Liste des désignations SAP existantes (MAKTX + Maktg si disponible)
-
-
-
-
 
     $(document).ready(function() {
-        const existingMaterials = @json(
-            collect($materialsData)->pluck('MAKTX')->merge(collect($materialsData)->pluck('Maktg'))->filter()->unique()->values()
-        );
-
-        // Vérifier si la désignation est déjà dans SAP
-        $('#ajax-article-form').on('submit', function (e) {
-            const designation = $('#site-title').val().trim();
-            if (existingMaterials.includes(designation)) {
-                e.preventDefault();
-                toastr.error('Cet article existe déjà dans SAP S4/Hana .', 'Erreur');
-            }
-        });
-
         $('#type-article').on('change', function() {
             var typeArticleId = $(this).val();
 
             if (typeArticleId) {
                 $.ajax({
-                    url: '/groupe-articles/' + typeArticleId
+                    url: '/groupe-articless/' + typeArticleId
                     , type: 'GET'
                     , dataType: 'json'
                     , success: function(data) {
