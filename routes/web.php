@@ -97,6 +97,15 @@ Route::middleware('auth')->group(function () {
     Route::get('mail_settings', [App\Http\Controllers\Admin\Mail_settingsContoller::class, 'index'])->name('mail_settings.index');
     Route::post('mail_settings/update/{id}', [App\Http\Controllers\Admin\Mail_settingsContoller::class, 'update'])->name('mail_settings.update');
 
+    //////////// template email validtion  routes //////////////////////////////////////////////////////////////
+    Route::get('template_email_validation', [App\Http\Controllers\Admin\TemplateEmailValidationController::class, 'index'])
+    ->name('template_email_validation.index');
+    Route::post('template_email_validation/update/{id}', [App\Http\Controllers\Admin\TemplateEmailValidationController::class, 'update'])
+    ->name('template_email_validation.update');
+
+
+
+
     //////////// mail recipients routes //////////////////////////////////////////////////////////////
     Route::get('mail_recipients', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'index'])->name('mail_recipients.index');
     Route::get('mail_recipients/create', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'create'])->name('mail_recipients.create');

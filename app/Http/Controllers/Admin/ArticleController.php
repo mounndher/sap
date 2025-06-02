@@ -12,6 +12,7 @@ use App\Models\UserSap;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use App\Mail\ArticleAddedMail;
+use App\Mail\ValidteDonneédebaseMail;
 use App\Models\Mail_recipients;
 use Illuminate\Support\Facades\Mail;
 class ArticleController extends Controller
@@ -246,6 +247,18 @@ public function validerdonnesdebase($id)
     $article = Article::findOrFail($id);
     $article->status = 1;
     $article->save();
+    $recipients = Mail_recipients::where('validtion', 1)->pluck('email')->toArray();
+        // Send email to all recipients
+       if (count($recipients) > 0) {
+            Mail::to($recipients)->send(new ValidteDonneédebaseMail ($article));
+        } else {
+            // Handle case where no recipients are found
+            return redirect()->back()->with([
+                'message' => 'Aucun destinataire trouvé pour l\'envoi de l\'email.',
+                'alert-type' => 'warning',
+            ]);
+        }
+
 
     return response()->json([
         'message' => 'Données de base validées avec succès.'

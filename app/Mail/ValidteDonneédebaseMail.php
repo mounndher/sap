@@ -8,11 +8,12 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-
+use App\Models\Validation;
 class ValidteDonneédebaseMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $article;
+     public $template;
     /**
      * Create a new message instance.
      */
@@ -20,6 +21,8 @@ class ValidteDonneédebaseMail extends Mailable
     {
         //
         $this->article = $article;
+        $this->template = Validation::first();
+
     }
 
     /**
@@ -28,7 +31,7 @@ class ValidteDonneédebaseMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Validte Donneé de base Mail',
+            subject:  $this->template->object ?? 'Default Subject',
         );
     }
 
@@ -38,7 +41,7 @@ class ValidteDonneédebaseMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.validte_donneédebase',
         );
     }
 

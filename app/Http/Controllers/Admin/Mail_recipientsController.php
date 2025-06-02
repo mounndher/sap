@@ -15,11 +15,8 @@ class Mail_recipientsController extends Controller
         $mailRecipients=Mail_recipients::all();
         return view('backend.mail_recipients.index',compact('mailRecipients'));
     }
-    public function create()
-    {
-        // Logic to show form for creating a new mail recipient
-        return view('backend.mail_recipients.create');
-    }
+    
+
     public function store(Request $request)
     {
 
@@ -33,6 +30,7 @@ class Mail_recipientsController extends Controller
         $mailRecipient->name = $request->input('name');
         $mailRecipient->email = $request->input('email');
         $mailRecipient->status=$request->input('status');
+         $mailRecipient->validtion=$request->input('validtion',0);// Default to 0 if not provided
         $mailRecipient->save();
         // Redirect or return a response
         return redirect()->route('mail_recipients.index')->with('success', 'Mail recipient created successfully.');
@@ -63,6 +61,7 @@ class Mail_recipientsController extends Controller
         $mailRecipient->name = $request->input('name');
         $mailRecipient->email = $request->input('email');
         $mailRecipient->status=$request->input('status');
+        $mailRecipient->validtion = $request->input('validtion', 0); // Default to 0 if not provided
         $mailRecipient->save();
         return redirect()->route('mail_recipients.index')->with('success', 'Mail recipient updated successfully.');
     }

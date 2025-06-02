@@ -44,11 +44,23 @@
 
                             <!-- Show in Home (optional, if needed) -->
                               <div class="form-group row mb-4">
-                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">status</label>
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">status for Recipient</label>
                                 <div class="col-sm-12 col-md-7">
                                     <label class="custom-switch mt-2">
                                          <input type="hidden" name="status" value="0">
                                         <input value="1" type="checkbox" name="status" class="custom-switch-input">
+                                        <span class="custom-switch-indicator"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row mb-4">
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">status for validtion </label>
+                                <div class="col-sm-12 col-md-7">
+                                    <label class="custom-switch mt-2">
+                                         <input type="hidden" name="validtion" value="0">
+                                        <input value="1" type="checkbox" name="validtion" class="custom-switch-input">
                                         <span class="custom-switch-indicator"></span>
                                     </label>
                                 </div>

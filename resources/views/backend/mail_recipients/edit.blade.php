@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                              <div class="form-group row mb-4">
-                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Afficher à l'accueil</label>
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">status</label>
                                 <div class="col-sm-12 col-md-7">
                                     <label class="custom-switch mt-2">
                                         <input type="hidden" name="status" value="0">
@@ -51,6 +51,20 @@
                                         <span class="custom-switch-indicator"></span>
                                     </label>
                                     @error('status')
+                                        <p class="text-danger">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-4">
+                                <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">validtion</label>
+                                <div class="col-sm-12 col-md-7">
+                                    <label class="custom-switch mt-2">
+                                        <input type="hidden" name="validtion" value="0">
+                                        <input type="checkbox" name="validtion" value="1" class="custom-switch-input" {{ old('validtion', $mailRecipient->validtion) ? 'checked' : '' }}>
+                                        <span class="custom-switch-indicator"></span>
+                                    </label>
+                                    @error('validtion')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
