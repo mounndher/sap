@@ -66,7 +66,7 @@
 
                 <!-- Achat form (hidden by default) -->
                 <div id="form-achat" class="settings-form d-none">
-                    @include('backend.masterdata.section.achat')
+
 
                 </div>
 
@@ -74,7 +74,7 @@
 
                 <!-- Comptabilité form (hidden by default) -->
                 <div id="form-comptabilite" class="settings-form d-none">
-                    @include('backend.masterdata.section.cotabilite')
+                  
                 </div>
 
                 <!-- Remove the old SEO form as it's not needed anymore -->

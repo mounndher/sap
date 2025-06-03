@@ -160,6 +160,8 @@ class ArticleController extends Controller
 
         // Get active article types
         $typearticle = TypeArticle::where('status', 1)->get();
+        //achat
+       
 
         // Get groups for the article's current type
         $groupes = [];
@@ -254,26 +256,31 @@ class ArticleController extends Controller
         ]);
     }
 
-  public function updateAchat(Request $request)
+ public function updateAchat(Request $request)
 {
     $request->validate([
         'BSTME' => 'required',
         'article_id' => 'required|exists:articles,id',
-        'groupe_acheteurs_id'=> 'required|exists:groupe_acheteurs,id',
+        'groupe_acheteurs_id' => 'required|exists:groupe_acheteurs,id',
     ]);
 
-    $achat = Achat::updateOrCreate(
-        ['article_id' => $request->article_id],  // شرط البحث
+    Achat::updateOrCreate(
+        ['article_id' => $request->article_id],
         [
             'BSTME' => $request->BSTME,
             'from' => $request->from,
-            'groupe_acheteurs_id' => $request->groupe_acheteurs_id,
             'to' => $request->to,
+            'groupe_acheteurs_id' => $request->groupe_acheteurs_id,
         ]
     );
 
-    return response()->json(['message' => 'Achat created or updated successfully', 'achat' => $achat]);
+   return redirect()->route('articles.edit', $request->article_id)
+        ->with([
+            'message' => "Les paramètres d'achat ont été enregistrés avec succès!",
+            'alert-type' => 'success'
+        ]);
 }
+
 
 
     public function updateComptabilite(Request $request,  $id)
