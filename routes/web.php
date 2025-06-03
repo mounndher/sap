@@ -41,11 +41,15 @@ Route::middleware('auth')->group(function () {
     Route::post('articles/store', [ArticleController::class, 'storeDonnesdebase'])->name('articles.store');
     Route::get('articles/edit/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::post('articles/update/achat/{id?}', [ArticleController::class, 'updateAchat'])->name('articles.updateAchat');
-
+    Route::post('articles/update/updateComptabilite/{id?}', [ArticleController::class, 'updateComptabilite'])->name('articles.updateComptabilite');
     Route::post('articles/update/donneesbase/{id}', [ArticleController::class, 'updateDonnesdebase'])->name('articles.updatedonneesbase');
-    Route::post('articles/update/Comptabilite/{id}', [ArticleController::class, 'updateComptabilite'])->name('articles.updateComptabilite');
+
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+
+    ///////route validtion
     Route::post('articles/validerdonnesdebase/{id}', [ArticleController::class, 'validerdonnesdebase'])->name('articles.validerdonnesdebase');
+    Route::post('achat/validerachat/{id}', [ArticleController::class, 'validerachat'])->name('achat.validerachat');
+    Route::post('comptabilite/validercomptabilite/{id}', [ArticleController::class, 'validercomptabilite'])->name('comptabilite.validercomptabilite');
     //////////// get groupe article by type article use ajax
     Route::get('/groupe-articles/{typeId}', [ArticleController::class, 'getGroupesByType']);
     Route::get('/groupe-articless/{typeArticleId}', [ArticleController::class, 'getGroupes']);

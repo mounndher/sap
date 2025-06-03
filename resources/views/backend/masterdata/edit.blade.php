@@ -30,17 +30,17 @@
                      <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="settings-tabs">
                             <li class="nav-item">
-                                <a href="#" class="nav-link active @if($articles->status == '1') valid @elseif($articles->status == '0') invalid @elseif($article->status == 'in_progress') in-progress @endif" data-target="#form-general">
+                                <a href="#" class="nav-link active  @if($articles->status == '1') valid @elseif($articles->status == '0') invalid @elseif($article->status == 'in_progress') in-progress @endif" data-target="#form-general">
                                     Données de base
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link @if($articles->status == 'valid') valid @elseif($articles->status == 'invalid') invalid @elseif($articles->status == 'in_progress') in-progress @endif" data-target="#form-achat">
+                                <a href="#" class="nav-link @if($achat->status == '1') valid @elseif($achat->status == '0') invalid @elseif($achat->status == 'in_progress') in-progress @endif" data-target="#form-achat">
                                     Achat
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link @if($articles->status == 'valid') valid @elseif($articles->status == 'invalid') invalid @elseif($articles->status == 'in_progress') in-progress @endif" data-target="#form-comptabilite">
+                                <a href="#" class="nav-link @if($comp->status == '1') valid @elseif($comp->status == '0') invalid @elseif($articles->status == 'in_progress') in-progress @endif" data-target="#form-comptabilite">
                                     Comptabilité
                                 </a>
                             </li>

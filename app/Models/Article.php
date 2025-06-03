@@ -38,5 +38,10 @@ public function achat()
 }
 
 
+public function comptabilite()
+{
+    return $this->hasOne(Comptabilité::class);
+}
+
 }
 

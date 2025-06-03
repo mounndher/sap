@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use App\Mail\ArticleAddedMail;
 use App\Mail\ValidteDonneédebaseMail;
 use App\Models\Achat;
+Use App\Models\Comptabilité;
+use App\Models\Classv;
 use App\Models\Mail_recipients;
 use Illuminate\Support\Facades\Mail;
 
@@ -124,8 +126,6 @@ class ArticleController extends Controller
         $username = $userSap->username;
 
         $password = Crypt::decryptString($userSap->password);
-        $article = Article::findOrFail($id);
-        $groupeAcheteur = GroupeAcheteur::all();
 
 
         // SAP API endpoints
@@ -158,24 +158,29 @@ class ArticleController extends Controller
             Log::error('Failed to fetch units data: ' . $e->getMessage());
         }
 
-        // Get active article types
-        $typearticle = TypeArticle::where('status', 1)->get();
-        //achat
-       
+
+        $article = Article::with('comptabilite')->findOrFail($id);
+        $groupeAcheteur = GroupeAcheteur::all();
 
         // Get groups for the article's current type
         $groupes = [];
         if ($article->MTART) {
             $groupes = GroupeArticle::where('type_article_id', $article->MTART)->get();
         }
-
+         $classes_valoris = Classv::where('type_article_id', $article->MTART)->get();
          $achat = Achat::where('article_id', $id)->first();
+         // Get active article types
+        $typearticle = TypeArticle::where('status', 1)->get();
+        $comp= Comptabilité::where('article_id', $id)->first();
+
         return view('backend.masterdata.edit', [
             'articles' => $article, // Keeping your original variable name
             'materialsData' => $materialsData,
+            'comp' => $comp,
             'groupeAcheteur' => $groupeAcheteur,
             'typearticle' => $typearticle,
             'groupes' => $groupes,
+            'classes_valoris'=>$classes_valoris,
             'unitsData' => $unitsData,
             'achat'=>$achat,
             'error' => (empty($materialsData) || empty($unitsData)
@@ -258,6 +263,7 @@ class ArticleController extends Controller
 
  public function updateAchat(Request $request)
 {
+
     $request->validate([
         'BSTME' => 'required',
         'article_id' => 'required|exists:articles,id',
@@ -270,6 +276,7 @@ class ArticleController extends Controller
             'BSTME' => $request->BSTME,
             'from' => $request->from,
             'to' => $request->to,
+            'status' => $request->status ?? 0, // Default to 0 if not provided
             'groupe_acheteurs_id' => $request->groupe_acheteurs_id,
         ]
     );
@@ -283,23 +290,28 @@ class ArticleController extends Controller
 
 
 
-    public function updateComptabilite(Request $request,  $id)
+    public function updateComptabilite(Request $request)
     {
         //dd($request->all());
         $request->validate([
-            'VPRSV_1' => 'required',
-            'BKLAS' => 'required',
+            'classe_valoris_id' => 'required',
+            'code_prix' => 'required',
         ]);
 
-        $Comptabilite = Article::findOrFail($id);
-        $Comptabilite->update([
+         Comptabilité::updateOrCreate(
+        ['article_id' => $request->article_id],
+        [
+            'classe_valoris_id' => $request->classe_valoris_id,
+            'code_prix' => $request->code_prix,
+        ]
+    );
 
-            'VPRSV_1' => $request->VPRSV_1,
-            'BKLAS' => $request->BKLAS,
 
+
+        return redirect()->route('articles.edit', $request->article_id)->with([
+            'message' => "Comptabilite updated successfully!",
+            'alert-type' => 'success',
         ]);
-
-        return redirect()->route('articles.index')->with('success', 'Comptabilite updated successfully');
     }
 
 
@@ -363,4 +375,31 @@ class ArticleController extends Controller
             'message' => 'Données de base validées avec succès.'
         ]);
     }
+
+   public function validerachat($id)
+{
+    $article = Achat::findOrFail($id);
+    $article->status = 1;
+    $article->save();
+
+
+
+
+    return response()->json([
+        'message' => 'Achat validées avec succès.'
+    ]);
+}
+
+
+public function validercomptabilite($id)
+{
+    $article = Comptabilité::findOrFail($id);
+    $article->status = 1;
+    $article->save();
+
+    return response()->json([
+        'message' => 'Comptabilité validées avec succès.'
+    ]);
+}
+
 }

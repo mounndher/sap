@@ -12,7 +12,8 @@
 
 <!-- FORM -->
 <div class="card" id="settings-card">
-    <form id="setting-form" action="{{ isset($articles->achat_id) ? route('articles.updateAchat', $articles->achat_id) : route('articles.updateAchat') }}" method="POST">
+    <form id="setting-form"
+    action="{{ isset($articles->achat_id) ? route('articles.updateAchat', $articles->achat_id) : route('articles.updateAchat') }}" method="POST">
         @csrf
         <div class="card-header">
             <h4 class="mb-0">Achat</h4>
@@ -58,34 +59,27 @@
             <div id="conversion-section" style="display: none;">
                 <div class="row mb-3">
                     <div class="col-md-9 offset-md-3">
-                        <h6 class="text-primary">Conversion d'unités</h6>
+                        <h6 class="text-primary">
+                            Entrez le facteur de conversion<br>
+                            d'unité de qté alternative en<br>
+                            unité de qté de base.
+                        </h6>
                     </div>
                 </div>
 
                 <div class="form-group row align-items-center">
-                    <label class="form-control-label col-md-3 text-md-right">Unité de quantité de base</label>
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <input type="text" id="base-unit" class="form-control" value="{{ $articles->MEINS ?? '' }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <input type="text" name="from" class="form-control" value="1">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group row align-items-center">
-                    <label class="form-control-label col-md-3 text-md-right">Unité d'achat</label>
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <input type="text" id="unit-purchase-display" class="form-control" value="{{ $articles->BSTME ?? '' }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <input type="text" name="to" class="form-control" value="{{ $achat->to ?? '' }}">
-                            </div>
+                    <label class="form-control-label col-md-3 text-md-right"></label>
+                    <div class="col-md-9">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-2">Unité de quantité de base</span>
+                            <input type="text" id="base-unit" class="form-control form-control-sm mx-1" style="width: 80px;" value="{{ $articles->MEINS ?? '' }}" readonly>
+                            <input type="text" name="from" class="form-control form-control-sm mx-1" style="width: 60px;" value="{{ $achat->to ?? '1' }}">
+                            <span class="mx-2" style="color: black">
+                                <=>
+                            </span>
+                            <span class="mr-2">Unité d'achat</span>
+                            <input type="text" id="unit-purchase-display" class="form-control form-control-sm mx-1" style="width: 80px;" value="{{ $articles->BSTME ?? '' }}" readonly>
+                            <input type="text" name="to" class="form-control form-control-sm mx-1" style="width: 60px;" value="{{ $achat->to ?? '' }}">
                         </div>
                     </div>
                 </div>
@@ -94,68 +88,102 @@
 
         <div class="card-footer bg-whitesmoke text-md-right">
             <button type="submit" class="btn btn-success" id="save-achat-btn">Enregistrer</button>
+
+            <button class="btn btn-success validate-btn" data-url="{{ route('achat.validerachat', $achat->id) }}">Valider</button>
+
         </div>
     </form>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <!-- SCRIPT -->
 <script>
-$(document).ready(function () {
-    console.log('Document ready');
+    $(document).ready(function() {
+        console.log('Document ready');
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    $('#setting-form').on('submit', function (e) {
-        e.preventDefault();
-
-        let form = $(this);
-        let url = form.attr('action');
-        let data = form.serialize();
-
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            success: function (response) {
-                console.log('AJAX success:', response);
-
-                toastr.options = {
-                    closeButton: true,
-                    progressBar: true,
-                    timeOut: 5000,
-                    positionClass: "toast-top-right"
-                };
-
-                let type = response['alert-type'] || 'success';
-                let msg = response['message'] || 'Opération réussie';
-
-                toastr[type](msg);
-            },
-            error: function (xhr) {
-                console.log('AJAX error:', xhr);
-                toastr.error('Une erreur est survenue.');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-    });
 
-    function toggleConversionSection() {
-        var unitPurchase = $('#unit-purchase').val();
-        var baseUnit = "{{ $articles->MEINS ?? '' }}";
+        $('#setting-form').on('submit', function(e) {
+            e.preventDefault();
 
-        if (unitPurchase === baseUnit || unitPurchase === '') {
-            $('#conversion-section').hide();
-        } else {
-            $('#conversion-section').show();
+            let form = $(this);
+            let url = form.attr('action');
+            let data = form.serialize();
+
+            $.ajax({
+                url: url
+                , type: 'POST'
+                , data: data
+                , success: function(response) {
+                    console.log('AJAX success:', response);
+
+                    toastr.options = {
+                        closeButton: true
+                        , progressBar: true
+                        , timeOut: 5000
+                        , positionClass: "toast-top-right"
+                    };
+
+                    let type = response['alert-type'] || 'success';
+                    let msg = response['message'] || 'Opération réussie';
+
+                    toastr[type](msg);
+                }
+                , error: function(xhr) {
+                    console.log('AJAX error:', xhr);
+                    toastr.error('Une erreur est survenue.');
+                }
+            });
+        });
+
+        function toggleConversionSection() {
+            var unitPurchase = $('#unit-purchase').val();
+            var baseUnit = "{{ $articles->MEINS ?? '' }}";
+
+            if (unitPurchase === baseUnit || unitPurchase === '') {
+                $('#conversion-section').hide();
+            } else {
+                $('#conversion-section').show();
+            }
+
+            $('#unit-purchase-display').val(unitPurchase);
         }
 
-        $('#unit-purchase-display').val(unitPurchase);
-    }
+        $('#unit-purchase').on('change', toggleConversionSection);
+        toggleConversionSection(); // initial run
+    });
 
-    $('#unit-purchase').on('change', toggleConversionSection);
-    toggleConversionSection(); // initial run
-});
+
+     $(document).on('click', '.validate-btn', function () {
+            console.log("Button clicked");
+
+            let url = $(this).data('url');
+            let button = $(this);
+
+            if (!url) {
+                console.error("URL non trouvée.");
+                return;
+            }
+
+            // Désactiver le bouton pendant la requête
+            button.prop('disabled', true).text('Validation...');
+
+            axios.post(url, {}, {
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+            .then(function (response) {
+                toastr.success(response.data.message || 'Succès');
+                button.text('Validé').removeClass('btn-success').addClass('btn-secondary');
+            })
+            .catch(function (error) {
+                console.error("Erreur AJAX:", error);
+                toastr.error('Erreur lors de la validation');
+                button.prop('disabled', false).text('Valider');
+            });
+        });
 </script>
