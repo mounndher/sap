@@ -254,19 +254,28 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function updateAchat(Request $request,  $id)
-    {
-        dd($request->all());
-        $request->validate([
-            'BSTME' => 'required',
-            'article_id' => 'required|exists:articles,id',
-        ]);
+  public function updateAchat(Request $request)
+{
+    $request->validate([
+        'BSTME' => 'required',
+        'article_id' => 'required|exists:articles,id',
+        'groupe_acheteurs_id'=> 'required|exists:groupe_acheteurs,id',
+    ]);
 
-        $achat = Achat::findOrFail($id);
-        $achat->BSTME = $request->BSTME;
-        $achat->article_id = $request->article_id; // Optional
-        $achat->save();
-    }
+    $achat = Achat::updateOrCreate(
+        ['article_id' => $request->article_id],  // شرط البحث
+        [
+            'BSTME' => $request->BSTME,
+            'from' => $request->from,
+            'groupe_acheteurs_id' => $request->groupe_acheteurs_id,
+            'to' => $request->to,
+        ]
+    );
+
+    return response()->json(['message' => 'Achat created or updated successfully', 'achat' => $achat]);
+}
+
+
     public function updateComptabilite(Request $request,  $id)
     {
         //dd($request->all());

@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class GroupeAcheteur extends Model
 {
     use HasFactory;
+    public function achat()
+{
+    return $this->hasOne(Achat::class, 'groupe_acheteurs_id');
+}
+
 }

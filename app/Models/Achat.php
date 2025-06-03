@@ -13,9 +13,6 @@ class Achat extends Model
     return $this->belongsTo(Article::class);
 }
 
-    protected $fillable = [
-        'article_id',
-        'BSTME', // unité d'achat
-    ];
+    protected $fillable = ['BSTME', 'article_id', 'from', 'groupe_acheteurs_id', 'to'];
     protected $table = 'achats'; // Specify the table name if it differs from the default
 }

@@ -39,9 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::get('articles', [ArticleController::class, 'index'])->name('articles.index');
     Route::get('articles/create', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('articles/store', [ArticleController::class, 'storeDonnesdebase'])->name('articles.store');
-    Route::post('articles/store/achat', [ArticleController::class, 'storeachat'])->name('articles.storeachat');
     Route::get('articles/edit/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
-    Route::post('articles/update/achat/{id}', [ArticleController::class, 'updateAchat'])->name('articles.updateAchat');
+   Route::post('articles/update/achat/{id?}', [ArticleController::class, 'updateAchat'])->name('articles.updateAchat');
+
     Route::post('articles/update/donneesbase/{id}', [ArticleController::class, 'updateDonnesdebase'])->name('articles.updatedonneesbase');
     Route::post('articles/update/Comptabilite/{id}', [ArticleController::class, 'updateComptabilite'])->name('articles.updateComptabilite');
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
