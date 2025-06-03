@@ -89,7 +89,7 @@
         <div class="card-footer bg-whitesmoke text-md-right">
             <button class="btn btn-primary" type="submit">Enregistrer</button>
 
-            <button class="btn btn-success" type="submit">Valider</button>
+           
         </div>
     </form>
 

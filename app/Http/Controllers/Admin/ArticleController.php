@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
-use App\Models\Achat;
+use App\Models\GroupeAcheteur;
 use App\Models\GroupeArticle;
 use App\Models\TypeArticle;
 use App\Models\UserSap;
@@ -13,8 +13,12 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use App\Mail\ArticleAddedMail;
 use App\Mail\ValidteDonneédebaseMail;
+use App\Models\Achat;
 use App\Models\Mail_recipients;
 use Illuminate\Support\Facades\Mail;
+
+use Illuminate\Support\Facades\Log;
+
 class ArticleController extends Controller
 {
     //
@@ -43,11 +47,11 @@ class ArticleController extends Controller
 
         $materialsResponse = Http::withBasicAuth($username, $password)->get($maktUrl);
         $materialsData = $materialsResponse->successful() ? $materialsResponse->json()['d']['results'] ?? [] : null;
-         //dd($materialsData);
+        //dd($materialsData);
         $unitsResponse = Http::withBasicAuth($username, $password)->get($t006aUrl);
         $unitsData = $unitsResponse->successful() ? $unitsResponse->json()['d']['results'] ?? [] : null;
 
-       $typearticle=TypeArticle::where('status', 1)->get();
+        $typearticle = TypeArticle::where('status', 1)->get();
 
 
         return view('backend.masterdata.create', [
@@ -67,7 +71,7 @@ class ArticleController extends Controller
             'MATKL' => 'required|string|max:9',
             'MEINS' => 'required',
             'XCHPF' => 'required',
-           // 'EKGRP' => 'required',
+            // 'EKGRP' => 'required',
         ]);
 
         $exists = Article::where('MAKTX', $request->MAKTX)->first();
@@ -91,11 +95,11 @@ class ArticleController extends Controller
 
         // Redirect to create with article_id and step=achat to show Achat tab
 
-          // ✅ Fetch all recipient emails $recipients = Mail_recipient::where('status', 1)->pluck('email')->toArray();
+        // ✅ Fetch all recipient emails $recipients = Mail_recipient::where('status', 1)->pluck('email')->toArray();
 
         $recipients = Mail_recipients::where('status', 1)->pluck('email')->toArray();
         // Send email to all recipients
-       if (count($recipients) > 0) {
+        if (count($recipients) > 0) {
             Mail::to($recipients)->send(new ArticleAddedMail($article));
         } else {
             // Handle case where no recipients are found
@@ -105,68 +109,78 @@ class ArticleController extends Controller
             ]);
         }
 
-       return redirect()->route('articles.index',$article->id);
+        return redirect()->route('articles.index', $article->id);
     }
 
 
-public function edit($id)
-{
-    $article = Article::findOrFail($id);
-    $username = env('SAP_USER', 'eriache');
-    $password = env('SAP_PASS', 'Mondher125');
+    public function edit($id)
+    {
+        $userSap = UserSap::first(); // Assuming you have a UserSap model to fetch SAP credentials
+        if (!$userSap) {
+            return view('backend.masterdata.create', ['materialsData' => null, 'error' => 'SAP user credentials not found']);
+        }
 
-    // SAP API endpoints
-    $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
-    $t006aUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/t006aSet?\$format=json";
+        // Use the credentials from the UserSap model
+        $username = $userSap->username;
 
-    // Fetch materials data with error handling
-    try {
-        $materialsResponse = Http::withBasicAuth($username, $password)
-                                ->timeout(30)
-                                ->get($maktUrl);
-        $materialsData = $materialsResponse->successful()
-            ? $materialsResponse->json()['d']['results'] ?? []
-            : [];
-    } catch (\Exception $e) {
-        $materialsData = [];
-        Log::error('Failed to fetch materials data: ' . $e->getMessage());
+        $password = Crypt::decryptString($userSap->password);
+        $article = Article::findOrFail($id);
+        $groupeAcheteur = GroupeAcheteur::all();
+
+
+        // SAP API endpoints
+        $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
+        $t006aUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/t006aSet?\$format=json";
+
+        // Fetch materials data with error handling
+        try {
+            $materialsResponse = Http::withBasicAuth($username, $password)
+                ->timeout(30)
+                ->get($maktUrl);
+            $materialsData = $materialsResponse->successful()
+                ? $materialsResponse->json()['d']['results'] ?? []
+                : [];
+        } catch (\Exception $e) {
+            $materialsData = [];
+            Log::error('Failed to fetch materials data: ' . $e->getMessage());
+        }
+
+        // Fetch units data with error handling
+        try {
+            $unitsResponse = Http::withBasicAuth($username, $password)
+                ->timeout(30)
+                ->get($t006aUrl);
+            $unitsData = $unitsResponse->successful()
+                ? $unitsResponse->json()['d']['results'] ?? []
+                : [];
+        } catch (\Exception $e) {
+            $unitsData = [];
+            Log::error('Failed to fetch units data: ' . $e->getMessage());
+        }
+
+        // Get active article types
+        $typearticle = TypeArticle::where('status', 1)->get();
+
+        // Get groups for the article's current type
+        $groupes = [];
+        if ($article->MTART) {
+            $groupes = GroupeArticle::where('type_article_id', $article->MTART)->get();
+        }
+
+         $achat = Achat::where('article_id', $id)->first();
+        return view('backend.masterdata.edit', [
+            'articles' => $article, // Keeping your original variable name
+            'materialsData' => $materialsData,
+            'groupeAcheteur' => $groupeAcheteur,
+            'typearticle' => $typearticle,
+            'groupes' => $groupes,
+            'unitsData' => $unitsData,
+            'achat'=>$achat,
+            'error' => (empty($materialsData) || empty($unitsData)
+                ? 'One or more datasets failed to load'
+                : null)
+        ]);
     }
-
-    // Fetch units data with error handling
-    try {
-        $unitsResponse = Http::withBasicAuth($username, $password)
-                           ->timeout(30)
-                           ->get($t006aUrl);
-        $unitsData = $unitsResponse->successful()
-            ? $unitsResponse->json()['d']['results'] ?? []
-            : [];
-    } catch (\Exception $e) {
-        $unitsData = [];
-        Log::error('Failed to fetch units data: ' . $e->getMessage());
-    }
-
-    // Get active article types
-    $typearticle = TypeArticle::where('status', 1)->get();
-
-    // Get groups for the article's current type
-    $groupes = [];
-    if ($article->MTART) {
-        $groupes = GroupeArticle::where('type_article_id', $article->MTART)->get();
-    }
-
-    return view('backend.masterdata.edit', [
-        'articles' => $article, // Keeping your original variable name
-        'materialsData' => $materialsData,
-        'typearticle' => $typearticle,
-        'groupes' => $groupes,
-        'unitsData' => $unitsData,
-        'error' => (empty($materialsData) || empty($unitsData)
-            ? 'One or more datasets failed to load'
-            : null)
-    ]);
-
-
-}
 
 
 
@@ -203,57 +217,55 @@ public function edit($id)
 
 
     public function updateDonnesdebase(Request $request, $id)
-{
-    $request->validate([
-        'MAKTX' => 'required|string|max:40',
-        'MTART' => 'required|string|max:4',
-        'MATKL' => 'required|string|max:9',
-        'MEINS' => 'required',
-        'XCHPF' => 'required',
-        //'EKGRP' => 'required',
-    ]);
-
-    $article = Article::findOrFail($id);
-    $typearticle=TypeArticle::where('status', 1)->get();
-    // Check for uniqueness of MAKTX only if it's changed
-    if ($request->MAKTX !== $article->MAKTX) {
-        $exists = Article::where('MAKTX', $request->MAKTX)->first();
-        if ($exists) {
-            return redirect()->back()->with([
-                'message' => 'Désolé, le Designation est déjà enregistré.',
-                'alert-type' => 'error',
-            ])->withInput();
-        }
-    }
-
-    $article->MTART = $request->MTART;
-    $article->MATKL = $request->MATKL;
-    $article->MEINS = $request->MEINS;
-    $article->XCHPF = $request->XCHPF;
-    $article->MAKTX = $request->MAKTX;
-    // $article->EKGRP = $request->EKGRP; // uncomment if needed
-    $article->save();
-
-    return redirect()->route('articles.index')->with([
-        'message' => 'Article mis à jour avec succès.',
-        'alert-type' => 'success',
-    ]);
-}
-
-   public function updateAchat(Request $request,  $id)
     {
         $request->validate([
+            'MAKTX' => 'required|string|max:40',
+            'MTART' => 'required|string|max:4',
+            'MATKL' => 'required|string|max:9',
+            'MEINS' => 'required',
+            'XCHPF' => 'required',
+            //'EKGRP' => 'required',
+        ]);
+
+        $article = Article::findOrFail($id);
+        $typearticle = TypeArticle::where('status', 1)->get();
+        // Check for uniqueness of MAKTX only if it's changed
+        if ($request->MAKTX !== $article->MAKTX) {
+            $exists = Article::where('MAKTX', $request->MAKTX)->first();
+            if ($exists) {
+                return redirect()->back()->with([
+                    'message' => 'Désolé, le Designation est déjà enregistré.',
+                    'alert-type' => 'error',
+                ])->withInput();
+            }
+        }
+
+        $article->MTART = $request->MTART;
+        $article->MATKL = $request->MATKL;
+        $article->MEINS = $request->MEINS;
+        $article->XCHPF = $request->XCHPF;
+        $article->MAKTX = $request->MAKTX;
+        // $article->EKGRP = $request->EKGRP; // uncomment if needed
+        $article->save();
+
+        return redirect()->route('articles.index')->with([
+            'message' => 'Article mis à jour avec succès.',
+            'alert-type' => 'success',
+        ]);
+    }
+
+    public function updateAchat(Request $request,  $id)
+    {
+        dd($request->all());
+        $request->validate([
             'BSTME' => 'required',
+            'article_id' => 'required|exists:articles,id',
         ]);
 
-        $achat = Article::findOrFail($id);
-        $achat->update([
-
-            'BSTME' => $request->BSTME,
-        ]);
-
-        return redirect()->route('articles.index')->with('success', 'Achat updated successfully');
-
+        $achat = Achat::findOrFail($id);
+        $achat->BSTME = $request->BSTME;
+        $achat->article_id = $request->article_id; // Optional
+        $achat->save();
     }
     public function updateComptabilite(Request $request,  $id)
     {
@@ -272,7 +284,6 @@ public function edit($id)
         ]);
 
         return redirect()->route('articles.index')->with('success', 'Comptabilite updated successfully');
-
     }
 
 
@@ -292,37 +303,37 @@ public function edit($id)
 
 
     public function getGroupes($typeArticleId)
-{
-    $groupes = GroupeArticle::where('type_article_id', $typeArticleId)->get();
+    {
+        $groupes = GroupeArticle::where('type_article_id', $typeArticleId)->get();
 
-    // Return JSON response
-    return response()->json($groupes);
-}
-
-public function getGroupesByType(Request $request)
-{
-    $typeId = $request->input('type_id');
-
-    if (!$typeId) {
-        return response()->json([]);
+        // Return JSON response
+        return response()->json($groupes);
     }
 
-    $groupes = GroupeArticle::where('type_article_id', $typeId)->get();
+    public function getGroupesByType(Request $request)
+    {
+        $typeId = $request->input('type_id');
 
-    return response()->json($groupes);
-}
+        if (!$typeId) {
+            return response()->json([]);
+        }
+
+        $groupes = GroupeArticle::where('type_article_id', $typeId)->get();
+
+        return response()->json($groupes);
+    }
 
 
 
-public function validerdonnesdebase($id)
-{
-    $article = Article::findOrFail($id);
-    $article->status = 1;
-    $article->save();
-    $recipients = Mail_recipients::where('validtion', 1)->pluck('email')->toArray();
+    public function validerdonnesdebase($id)
+    {
+        $article = Article::findOrFail($id);
+        $article->status = 1;
+        $article->save();
+        $recipients = Mail_recipients::where('validtion', 1)->pluck('email')->toArray();
         // Send email to all recipients
-       if (count($recipients) > 0) {
-            Mail::to($recipients)->send(new ValidteDonneédebaseMail ($article));
+        if (count($recipients) > 0) {
+            Mail::to($recipients)->send(new ValidteDonneédebaseMail($article));
         } else {
             // Handle case where no recipients are found
             return redirect()->back()->with([
@@ -332,10 +343,8 @@ public function validerdonnesdebase($id)
         }
 
 
-    return response()->json([
-        'message' => 'Données de base validées avec succès.'
-    ]);
-}
-
-
+        return response()->json([
+            'message' => 'Données de base validées avec succès.'
+        ]);
+    }
 }

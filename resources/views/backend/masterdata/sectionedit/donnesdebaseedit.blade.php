@@ -1,5 +1,6 @@
 <script>
     console.log("Script loaded");
+
 </script>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="card" id="settings-card">
@@ -99,9 +100,10 @@
         <div class="card-footer bg-whitesmoke text-md-right">
             <button class="btn btn-primary" id="save-btn">Save Changes</button>
     </form>
-    <button class="btn btn-success validate-btn" data-id="{{ $articles->id }}">
-    Valider
-</button>
+    @if ($articles->status == 0)
+    <button class="btn btn-success validate-btn" data-id="{{ $articles->id }}">Valider</button>
+    @endif
+
 
 </div>
 
@@ -122,7 +124,7 @@
     console.log("Script loaded");
 
     // ✅ Use delegated event binding in case content is dynamic
-    $(document).on('click', '.validate-btn', function () {
+    $(document).on('click', '.validate-btn', function() {
         console.log("Button clicked");
 
         let articleId = $(this).data('id');
@@ -137,61 +139,62 @@
         button.prop('disabled', true).text('Validation...');
 
         axios.post(`/articles/validerdonnesdebase/${articleId}`, {}, {
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        })
-        .then(function (response) {
-            toastr.success(response.data.message || 'Succès');
-            button.text('Validé').removeClass('btn-success').addClass('btn-secondary');
-        })
-        .catch(function (error) {
-            console.error("AJAX Error:", error);
-            toastr.error('Erreur lors de la validation');
-            button.prop('disabled', false).text('Valider');
-        });
-    });
-
-    $(document).ready(function () {
-    function loadGroupes(typeId, selectedValue = null) {
-        if (!typeId) return;
-
-        axios.post("{{ route('get.groupes.by.type') }}", {
-            type_id: typeId
-        }, {
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        })
-        .then(response => {
-            const groupes = response.data;
-            const select = $('#groupe-articles');
-            select.empty();
-            select.append(`<option value="">Choisir un groupe</option>`);
-            groupes.forEach(groupe => {
-                select.append(
-                    `<option value="${groupe.id}" ${selectedValue == groupe.id ? 'selected' : ''}>${groupe.name}</option>`
-                );
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+            .then(function(response) {
+                toastr.success(response.data.message || 'Succès');
+                button.text('Validé').removeClass('btn-success').addClass('btn-secondary');
+            })
+            .catch(function(error) {
+                console.error("AJAX Error:", error);
+                toastr.error('Erreur lors de la validation');
+                button.prop('disabled', false).text('Valider');
             });
-        })
-        .catch(error => {
-            console.error('Erreur de chargement des groupes:', error);
-            toastr.error("Échec de chargement des groupes.");
-        });
-    }
-
-    // Lors du changement de type
-    $('#mtart').change(function () {
-        const typeId = $(this).val();
-        loadGroupes(typeId);
     });
 
-    // ✅ Charger automatiquement si MTART est déjà défini (utile pour le mode édition)
-    const initialType = $('#mtart').val();
-    const selectedGroupId = "{{ $articles->MATKL }}";
-    if (initialType) {
-        loadGroupes(initialType, selectedGroupId);
-    }
-});
+    $(document).ready(function() {
+        function loadGroupes(typeId, selectedValue = null) {
+            if (!typeId) return;
+
+            axios.post("{{ route('get.groupes.by.type') }}", {
+                    type_id: typeId
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                })
+                .then(response => {
+                    const groupes = response.data;
+                    const select = $('#groupe-articles');
+                    select.empty();
+                    select.append(`<option value="">Choisir un groupe</option>`);
+                    groupes.forEach(groupe => {
+                        select.append(
+                            `<option value="${groupe.id}" ${selectedValue == groupe.id ? 'selected' : ''}>${groupe.name}</option>`
+                        );
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur de chargement des groupes:', error);
+                    toastr.error("Échec de chargement des groupes.");
+                });
+        }
+
+        // Lors du changement de type
+        $('#mtart').change(function() {
+            const typeId = $(this).val();
+            loadGroupes(typeId);
+        });
+
+        // ✅ Charger automatiquement si MTART est déjà défini (utile pour le mode édition)
+        const initialType = $('#mtart').val();
+        const selectedGroupId = "{{ $articles->MATKL }}";
+        if (initialType) {
+            loadGroupes(initialType, selectedGroupId);
+        }
+    });
+
 </script>
 @endpush

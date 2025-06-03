@@ -1071,7 +1071,7 @@ table tr:hover .table-links {
     }
 
   .nav-pills .nav-item .nav-link.active {
-    box-shadow: 0 2px 6px #acb5f6;
+    box-shadow: 0 2px 6px #3abaf4;
     color: #fff;
     background-color: #3abaf4
 ; }

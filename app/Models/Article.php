@@ -32,5 +32,11 @@ class Article extends Model
     return $this->belongsTo(GroupeArticle::class, 'MATKL', 'id');
 }
 
+public function achat()
+{
+    return $this->hasOne(Achat::class, 'article_id');
+}
+
+
 }
 
