@@ -159,64 +159,60 @@
     });
 
 
-    $(document).on('click', '.validate-btn', function() {
-        console.log("Button clicked");
+  $(document).on('click', '.validate-btn', function() {
+    let url = $(this).data('url');
+    let button = $(this);
 
-        let url = $(this).data('url');
-        let button = $(this);
+    button.prop('disabled', true).text('Validation...');
 
-        if (!url) {
-            console.error("URL non trouvée.");
-            return;
+    axios.post(url, {}, {
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    })
+    .then(function(response) {
+        toastr.success(response.data.message || 'Succès');
+        // استبدال زر "Valider" بزر "Invalider"
+        button.replaceWith(`
+            <button class="btn btn-danger invalidate-btn" data-url="${button.data('url').replace('validerachat', 'invaliderachat')}">Invalider</button>
+        `);
 
-        // Désactiver le bouton pendant la requête
-        button.prop('disabled', true).text('Validation...');
-
-        axios.post(url, {}, {
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            })
-            .then(function(response) {
-                toastr.success(response.data.message || 'Succès');
-                button.text('Validé').removeClass('btn-success').addClass('btn-secondary');
-            })
-            .catch(function(error) {
-                console.error("Erreur AJAX:", error);
-                toastr.error('Erreur lors de la validation');
-                button.prop('disabled', false).text('Valider');
-            });
+        // تحديث تبويب Achat
+        $('.nav-link.achat-tab').removeClass('invalid valid').addClass('valid');
+    })
+    .catch(function(error) {
+        toastr.error('Erreur lors de la validation');
+        button.prop('disabled', false).text('Valider');
     });
+});
 
-    $(document).on('click', '.invalidate-btn', function() {
-        console.log("Button clicked");
+$(document).on('click', '.invalidate-btn', function() {
+    let url = $(this).data('url');
+    let button = $(this);
 
-        let url = $(this).data('url');
-        let button = $(this);
+    button.prop('disabled', true).text('InValidation...');
 
-        if (!url) {
-            console.error("URL non trouvée.");
-            return;
+    axios.post(url, {}, {
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    })
+    .then(function(response) {
+        toastr.success(response.data.message || 'Succès');
+        // استبدال زر "Invalider" بزر "Valider"
+        button.replaceWith(`
+            <button class="btn btn-success validate-btn" data-url="${button.data('url').replace('invaliderachat', 'validerachat')}">Valider</button>
+        `);
 
-        // Désactiver le bouton pendant la requête
-        button.prop('disabled', true).text('InValidation...');
-
-        axios.post(url, {}, {
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            })
-            .then(function(response) {
-                toastr.success(response.data.message || 'Succès');
-                button.text('InValidé').removeClass('btn-success').addClass('btn-secondary');
-            })
-            .catch(function(error) {
-                console.error("Erreur AJAX:", error);
-                toastr.error('Erreur lors de la validation');
-                button.prop('disabled', false).text('Valider');
-            });
+        // تحديث تبويب Achat
+        $('.nav-link.achat-tab').removeClass('invalid valid').addClass('invalid');
+    })
+    .catch(function(error) {
+        toastr.error('Erreur lors de la validation');
+        button.prop('disabled', false).text('Invalider');
     });
+});
+
+
 
 </script>

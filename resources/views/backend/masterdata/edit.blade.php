@@ -2,20 +2,20 @@
 
 @section('content')
 @php
-    function statusClass($status) {
-        return match($status) {
-            0 => 'invalid',
-            1 => 'valid',
-            2 => 'in-progress',
-            default => '',
-        };
-    }
+function statusClass($status) {
+return match($status) {
+0 => 'invalid',
+1 => 'valid',
+2 => 'in-progress',
+default => '',
+};
+}
 
-    $generalStatus = statusClass($articles->status ?? null);
-    $achatStatus = statusClass($achat->status ?? null);
-    $comptabiliteStatus = statusClass($comp->status ?? null);
+$generalStatus = statusClass($articles->status ?? null);
+$achatStatus = statusClass($achat->status ?? null);
+$comptabiliteStatus = statusClass($comp->status ?? null);
 
-    //dd($article, $achat, $comp, $generalStatus, $achatStatus, $comptabiliteStatus);
+//dd($article, $achat, $comp, $generalStatus, $achatStatus, $comptabiliteStatus);
 @endphp
 
 <section class="section">
@@ -45,23 +45,18 @@
                     <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="settings-tabs">
                             <li class="nav-item">
-                                <a href="#"
-                                   class="nav-link {{ session('active_tab', 'general') == 'general' ? 'active' : '' }} {{ $generalStatus }}"
-                                   data-target="#form-general">
+                                <a href="#" class="nav-link {{ session('active_tab', 'general') == 'general' ? 'active' : '' }} {{ $generalStatus }}" data-target="#form-general">
                                     Données de base
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#"
-                                   class="nav-link {{ session('active_tab') == 'achat' ? 'active' : '' }} {{ $achatStatus }}"
-                                   data-target="#form-achat">
+                                <a href="#" class="nav-link achat-tab {{ session('active_tab') == 'achat' ? 'active' : '' }} {{ $achatStatus }}" data-target="#form-achat">
                                     Achat
                                 </a>
                             </li>
+
                             <li class="nav-item">
-                                <a href="#"
-                                   class="nav-link {{ session('active_tab') == 'comptabilite' ? 'active' : '' }} {{ $comptabiliteStatus }}"
-                                   data-target="#form-comptabilite">
+                                <a href="#" class="nav-link {{ session('active_tab') == 'comptabilite' ? 'active' : '' }} {{ $comptabiliteStatus }}" data-target="#form-comptabilite">
                                     Comptabilité
                                 </a>
                             </li>
@@ -92,17 +87,20 @@
 <style>
     .nav-pills .nav-link.valid {
         color: #fff;
-        background-color: #28a745; /* Green */
+        background-color: #28a745;
+        /* Green */
     }
 
     .nav-pills .nav-link.invalid {
         color: #fff;
-        background-color: #dc3545; /* Red */
+        background-color: #dc3545;
+        /* Red */
     }
 
     .nav-pills .nav-link.in-progress {
         color: #fff;
-        background-color: #fd7e14; /* Orange */
+        background-color: #fd7e14;
+        /* Orange */
     }
 
     .nav-pills .nav-link.valid.active {
@@ -119,17 +117,18 @@
         background-color: #fd7e14;
         box-shadow: 0 2px 6px #fd7e14;
     }
+
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('#settings-tabs .nav-link');
         const forms = document.querySelectorAll('.settings-form');
 
         tabs.forEach(tab => {
-            tab.addEventListener('click', function (e) {
+            tab.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = tab.getAttribute('data-target');
 
@@ -149,5 +148,6 @@
             });
         });
     });
+
 </script>
 @endpush

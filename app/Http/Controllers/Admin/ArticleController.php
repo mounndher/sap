@@ -403,8 +403,8 @@ class ArticleController extends Controller
     ]);
 }
 
-public function invalidachat($id){
-    $article = Comptabilité::findOrFail($id);
+public function invaliderachat($id){
+    $article =  Achat::findOrFail($id);
     $article->status = 0;
     $article->save();
 
