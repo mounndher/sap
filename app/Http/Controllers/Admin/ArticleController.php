@@ -379,7 +379,7 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function invaliddonnesdebase($id){
+    public function invaliderdonnesdebase($id){
     $article = Article::findOrFail($id);
     $article->status = 0;
     $article->save();
@@ -424,7 +424,7 @@ public function validercomptabilite($id)
     ]);
 }
 
-public function invalidcomptabilite($id){
+public function invalidercomptabilite($id){
     $article = Comptabilité::findOrFail($id);
     $article->status = 0;
     $article->save();

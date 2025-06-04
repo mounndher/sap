@@ -101,7 +101,10 @@
             <button class="btn btn-primary" id="save-btn">Save Changes</button>
     </form>
     @if ($articles->status == 0)
-    <button class="btn btn-success validate-btn" data-id="{{ $articles->id }}">Valider</button>
+    <button class="btn btn-success validatee-btn" data-id="{{ $articles->id }}">Valider</button>
+    @endif
+    @if ($articles->status == 1)
+    <button class="btn btn-success invalidatee-btn" data-id="{{ $articles->id }}">InValider</button>
     @endif
 
 
@@ -124,35 +127,92 @@
     console.log("Script loaded");
 
     // ✅ Use delegated event binding in case content is dynamic
-    $(document).on('click', '.validate-btn', function() {
-        console.log("Button clicked");
+   // ✅ Valider Donnes de Base
+$(document).on('click', '.validatee-btn', function () {
+    let articleId = $(this).data('id');
+    let button = $(this);
 
-        let articleId = $(this).data('id');
-        let button = $(this);
+    if (!articleId) {
+        console.error("Article ID not found.");
+        return;
+    }
 
-        if (!articleId) {
-            console.error("Article ID not found.");
-            return;
+    button.prop('disabled', true).text('Validation...');
+
+    axios.post(`/articles/validerdonnesdebase/${articleId}`, {}, {
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    })
+    .then(function (response) {
+        toastr.success(response.data.message || 'Succès');
 
-        // Disable button to prevent double click
-        button.prop('disabled', true).text('Validation...');
+        // Remplacer le bouton
+        button.replaceWith(`
+            <button class="btn btn-danger invalidatee-btn" data-id="${articleId}">InValider</button>
+        `);
 
-        axios.post(`/articles/validerdonnesdebase/${articleId}`, {}, {
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            })
-            .then(function(response) {
-                toastr.success(response.data.message || 'Succès');
-                button.text('Validé').removeClass('btn-success').addClass('btn-secondary');
-            })
-            .catch(function(error) {
-                console.error("AJAX Error:", error);
-                toastr.error('Erreur lors de la validation');
-                button.prop('disabled', false).text('Valider');
-            });
+        // ✅ Changer l'état du tab
+        $('.nav-link.donnesdebase-tab')
+            .removeClass('invalid in-progress')
+            .addClass('valid');
+    })
+    .catch(function (error) {
+        console.error("AJAX Error:", error);
+        toastr.error('Erreur lors de la validation');
+        button.prop('disabled', false).text('Valider');
     });
+});
+
+// ✅ Invalider Donnes de Base
+$(document).on('click', '.invalidatee-btn', function () {
+    let articleId = $(this).data('id');
+    let button = $(this);
+
+    if (!articleId) {
+        console.error("Article ID not found.");
+        return;
+    }
+
+    button.prop('disabled', true).text('InValidation...');
+
+    axios.post(`/articles/invaliderdonnesdebase/${articleId}`, {}, {
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+    .then(function (response) {
+        toastr.success(response.data.message || 'Données invalidées');
+
+        // Remplacer le bouton
+        button.replaceWith(`
+            <button class="btn btn-success validatee-btn" data-id="${articleId}">Valider</button>
+        `);
+
+        // ✅ Changer l'état du tab
+        $('.nav-link.donnesdebase-tab')
+            .removeClass('valid in-progress')
+            .addClass('invalid');
+    })
+    .catch(function (error) {
+        console.error("AJAX Error:", error);
+        toastr.error('Erreur lors de l’invalidation');
+        button.prop('disabled', false).text('InValider');
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     $(document).ready(function() {
         function loadGroupes(typeId, selectedValue = null) {

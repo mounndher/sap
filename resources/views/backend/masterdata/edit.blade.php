@@ -45,7 +45,7 @@ $comptabiliteStatus = statusClass($comp->status ?? null);
                     <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="settings-tabs">
                             <li class="nav-item">
-                                <a href="#" class="nav-link {{ session('active_tab', 'general') == 'general' ? 'active' : '' }} {{ $generalStatus }}" data-target="#form-general">
+                                <a href="#" class="nav-link  donnesdebase-tab {{ session('active_tab', 'general') == 'general' ? 'active' : '' }} {{ $generalStatus }}" data-target="#form-general">
                                     Données de base
                                 </a>
                             </li>
@@ -56,10 +56,11 @@ $comptabiliteStatus = statusClass($comp->status ?? null);
                             </li>
 
                             <li class="nav-item">
-                                <a href="#" class="nav-link {{ session('active_tab') == 'comptabilite' ? 'active' : '' }} {{ $comptabiliteStatus }}" data-target="#form-comptabilite">
+                                <a href="#" class="nav-link comptabilite-tab {{ session('active_tab') == 'comptabilite' ? 'active' : '' }} {{ $comptabiliteStatus }}" data-target="#form-comptabilite">
                                     Comptabilité
                                 </a>
                             </li>
+
                         </ul>
                     </div>
                 </div>

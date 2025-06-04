@@ -33,7 +33,7 @@
                 <label for="unit" class="form-control-label col-sm-3 text-md-right">Code prix</label>
                 <div class="col-sm-6">
                     <select name="code_prix" class="form-control" required>
-                        <option value="" >Choisissez une</option>
+                        <option value="">Choisissez une</option>
                         <option value="S" {{ ($comp->code_prix ?? '') == 'S' ? 'selected' : '' }}>S || Prix Stander</option>
                         <option value="v" {{ ($comp->code_prix ?? '') == 'v' ? 'selected' : '' }}>V || Prix Moyen pondéré</option>
                     </select>
@@ -45,10 +45,10 @@
         <div class="card-footer bg-whitesmoke text-md-right">
             <button class="btn btn-primary" type="submit">Enregistrer</button>
             @if($comp->status == 0)
-            <button class="btn btn-success validate-btn" data-url="{{ route('comptabilite.validercomptabilite', $comp->id) }}">Valider</button>
+            <button class="btn btn-success validate-bttn" data-url="{{ route('comptabilite.validercomptabilite', $comp->id) }}">Valider</button>
             @endif
             @if($comp->status == 1)
-            <button class="btn btn-success validate-btn" data-url="{{ route('comptabilite.validercomptabilite', $comp->id) }}">InValider</button>
+            <button class="btn btn-success invalidate-bttn" data-url="{{ route('comptabilite.invalidercomptabilite', $comp->id) }}">InValider</button>
             @endif
         </div>
     </form>
@@ -59,36 +59,63 @@
 <!-- SCRIPT -->
 <script>
 
+   $(document).on('click', '.validate-bttn', function () {
+    let url = $(this).data('url');
+    let button = $(this);
+
+    button.prop('disabled', true).text('Validation...');
+
+    axios.post(url, {}, {
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+    .then(function (response) {
+        toastr.success(response.data.message || 'Succès');
+
+        // تبديل الزر من "Valider" إلى "Invalider"
+        button.replaceWith(`
+            <button class="btn btn-danger invalidate-bttn" data-url="${url.replace('validercomptabilite', 'invalidercomptabilite')}">InValider</button>
+        `);
+
+        // تغيير لون تبويب comptabilite
+        $('.nav-link.comptabilite-tab').removeClass('invalid in-progress valid').addClass('valid');
+    })
+    .catch(function (error) {
+        toastr.error('Erreur lors de la validation');
+        button.prop('disabled', false).text('Valider');
+    });
+});
 
 
-     $(document).on('click', '.validate-btn', function () {
-            console.log("Button clicked");
+$(document).on('click', '.invalidate-bttn', function () {
+    let url = $(this).data('url');
+    let button = $(this);
 
-            let url = $(this).data('url');
-            let button = $(this);
+    button.prop('disabled', true).text('InValidation...');
 
-            if (!url) {
-                console.error("URL non trouvée.");
-                return;
-            }
+    axios.post(url, {}, {
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+    .then(function (response) {
+        toastr.success(response.data.message || 'Succès');
 
-            // Désactiver le bouton pendant la requête
-            button.prop('disabled', true).text('Validation...');
+        // تبديل الزر من "Invalider" إلى "Valider"
+        button.replaceWith(`
+            <button class="btn btn-success validate-bttn" data-url="${url.replace('invalidercomptabilite', 'validercomptabilite')}">Valider</button>
+        `);
 
-            axios.post(url, {}, {
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            })
-            .then(function (response) {
-                toastr.success(response.data.message || 'Succès');
-                button.text('Validé').removeClass('btn-success').addClass('btn-secondary');
-            })
-            .catch(function (error) {
-                console.error("Erreur AJAX:", error);
-                toastr.error('Erreur lors de la validation');
-                button.prop('disabled', false).text('Valider');
-            });
-        });
+        // تغيير لون تبويب comptabilite
+        $('.nav-link.comptabilite-tab').removeClass('valid in-progress').addClass('invalid');
+    })
+    .catch(function (error) {
+        toastr.error('Erreur lors de la validation');
+        button.prop('disabled', false).text('InValider');
+    });
+});
+
+
+
 </script>
-
