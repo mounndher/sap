@@ -44,7 +44,12 @@
 
         <div class="card-footer bg-whitesmoke text-md-right">
             <button class="btn btn-primary" type="submit">Enregistrer</button>
+            @if($comp->status == 0)
             <button class="btn btn-success validate-btn" data-url="{{ route('comptabilite.validercomptabilite', $comp->id) }}">Valider</button>
+            @endif
+            @if($comp->status == 1)
+            <button class="btn btn-success validate-btn" data-url="{{ route('comptabilite.validercomptabilite', $comp->id) }}">InValider</button>
+            @endif
         </div>
     </form>
 </div>
@@ -53,7 +58,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <!-- SCRIPT -->
 <script>
-   
+
 
 
      $(document).on('click', '.validate-btn', function () {

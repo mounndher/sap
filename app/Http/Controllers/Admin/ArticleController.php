@@ -172,7 +172,7 @@ class ArticleController extends Controller
          // Get active article types
         $typearticle = TypeArticle::where('status', 1)->get();
         $comp= Comptabilité::where('article_id', $id)->first();
-
+                //dd($article->status);
         return view('backend.masterdata.edit', [
             'articles' => $article, // Keeping your original variable name
             'materialsData' => $materialsData,
@@ -258,6 +258,7 @@ class ArticleController extends Controller
         return redirect()->route('articles.index')->with([
             'message' => 'Article mis à jour avec succès.',
             'alert-type' => 'success',
+             'active_tab' => 'general'
         ]);
     }
 
@@ -284,7 +285,8 @@ class ArticleController extends Controller
    return redirect()->route('articles.edit', $request->article_id)
         ->with([
             'message' => "Les paramètres d'achat ont été enregistrés avec succès!",
-            'alert-type' => 'success'
+            'alert-type' => 'success',
+             'active_tab' => 'achat'
         ]);
 }
 
@@ -311,6 +313,7 @@ class ArticleController extends Controller
         return redirect()->route('articles.edit', $request->article_id)->with([
             'message' => "Comptabilite updated successfully!",
             'alert-type' => 'success',
+            'active_tab' => 'comptabilite'
         ]);
     }
 
@@ -376,6 +379,16 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function invaliddonnesdebase($id){
+    $article = Article::findOrFail($id);
+    $article->status = 0;
+    $article->save();
+
+    return response()->json([
+        'message' => 'Données de base invalidées avec succès.'
+    ]);
+}
+
    public function validerachat($id)
 {
     $article = Achat::findOrFail($id);
@@ -390,6 +403,15 @@ class ArticleController extends Controller
     ]);
 }
 
+public function invalidachat($id){
+    $article = Comptabilité::findOrFail($id);
+    $article->status = 0;
+    $article->save();
+
+    return response()->json([
+        'message' => 'Achat invalidées avec succès.'
+    ]);
+}
 
 public function validercomptabilite($id)
 {
@@ -399,6 +421,16 @@ public function validercomptabilite($id)
 
     return response()->json([
         'message' => 'Comptabilité validées avec succès.'
+    ]);
+}
+
+public function invalidcomptabilite($id){
+    $article = Comptabilité::findOrFail($id);
+    $article->status = 0;
+    $article->save();
+
+    return response()->json([
+        'message' => 'Comptabilité invalidées avec succès.'
     ]);
 }
 

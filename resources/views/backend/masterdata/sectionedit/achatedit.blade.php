@@ -12,8 +12,7 @@
 
 <!-- FORM -->
 <div class="card" id="settings-card">
-    <form id="setting-form"
-    action="{{ isset($articles->achat_id) ? route('articles.updateAchat', $articles->achat_id) : route('articles.updateAchat') }}" method="POST">
+    <form id="setting-form" action="{{ isset($articles->achat_id) ? route('articles.updateAchat', $articles->achat_id) : route('articles.updateAchat') }}" method="POST">
         @csrf
         <div class="card-header">
             <h4 class="mb-0">Achat</h4>
@@ -88,9 +87,12 @@
 
         <div class="card-footer bg-whitesmoke text-md-right">
             <button type="submit" class="btn btn-success" id="save-achat-btn">Enregistrer</button>
-
+            @if ($achat->status == 0)
             <button class="btn btn-success validate-btn" data-url="{{ route('achat.validerachat', $achat->id) }}">Valider</button>
-
+            @endif
+            @if ($achat->status == 1)
+            <button class="btn btn-success invalidate-btn" data-url="{{ route('achat.invaliderachat', $achat->id) }}">InValider</button>
+            @endif
         </div>
     </form>
 </div>
@@ -157,33 +159,64 @@
     });
 
 
-     $(document).on('click', '.validate-btn', function () {
-            console.log("Button clicked");
+    $(document).on('click', '.validate-btn', function() {
+        console.log("Button clicked");
 
-            let url = $(this).data('url');
-            let button = $(this);
+        let url = $(this).data('url');
+        let button = $(this);
 
-            if (!url) {
-                console.error("URL non trouvée.");
-                return;
-            }
+        if (!url) {
+            console.error("URL non trouvée.");
+            return;
+        }
 
-            // Désactiver le bouton pendant la requête
-            button.prop('disabled', true).text('Validation...');
+        // Désactiver le bouton pendant la requête
+        button.prop('disabled', true).text('Validation...');
 
-            axios.post(url, {}, {
+        axios.post(url, {}, {
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             })
-            .then(function (response) {
+            .then(function(response) {
                 toastr.success(response.data.message || 'Succès');
                 button.text('Validé').removeClass('btn-success').addClass('btn-secondary');
             })
-            .catch(function (error) {
+            .catch(function(error) {
                 console.error("Erreur AJAX:", error);
                 toastr.error('Erreur lors de la validation');
                 button.prop('disabled', false).text('Valider');
             });
-        });
+    });
+
+    $(document).on('click', '.invalidate-btn', function() {
+        console.log("Button clicked");
+
+        let url = $(this).data('url');
+        let button = $(this);
+
+        if (!url) {
+            console.error("URL non trouvée.");
+            return;
+        }
+
+        // Désactiver le bouton pendant la requête
+        button.prop('disabled', true).text('InValidation...');
+
+        axios.post(url, {}, {
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+            .then(function(response) {
+                toastr.success(response.data.message || 'Succès');
+                button.text('InValidé').removeClass('btn-success').addClass('btn-secondary');
+            })
+            .catch(function(error) {
+                console.error("Erreur AJAX:", error);
+                toastr.error('Erreur lors de la validation');
+                button.prop('disabled', false).text('Valider');
+            });
+    });
+
 </script>
