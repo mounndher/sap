@@ -1,0 +1,16 @@
+LDAP_LOGGING=true
+LDAP_CONNECTION=default
+LDAP_HOST=10.20.30.5
+LDAP_PORT=389
+LDAP_BASE_DN1="OU=Users,OU=PharmaInvest Production,DC=local,DC=pharma"
+LDAP_BASE_DN="CN=gr-IT,OU=Départements,OU=Groups,OU=PharmaInvest Production,DC=local,DC=pharma"
+
+
+LDAP_USER_FILTER="(&(objectClass=user)(sAMAccountName={username}))"
+LDAP_GROUP_FILTER="(&(objectClass=group)(member={dn}))"
+
+LDAP_USERNAME="CN=glpi,OU=IT,OU=Users,OU=PharmaInvest Production,DC=local,DC=pharma"
+LDAP_PASSWORD="pharma@2025"
+LDAP_USE_SSL=false
+LDAP_USE_TLS=false
+LDAP_TIMEOUT=5

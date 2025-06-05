@@ -70,10 +70,11 @@ $comptabiliteStatus = statusClass($comp->status ?? null);
                 <div id="form-general" class="settings-form {{ session('active_tab', 'general') == 'general' ? '' : 'd-none' }}">
                     @include('backend.masterdata.sectionedit.donnesdebaseedit')
                 </div>
-
+                 @if(hasPermission(['achat edit','achat update']) || isSuperAdmin())
                 <div id="form-achat" class="settings-form {{ session('active_tab') == 'achat' ? '' : 'd-none' }}">
                     @include('backend.masterdata.sectionedit.achatedit')
                 </div>
+                @endif
 
                 <div id="form-comptabilite" class="settings-form {{ session('active_tab') == 'comptabilite' ? '' : 'd-none' }}">
                     @include('backend.masterdata.sectionedit.cotabiliteedit')

@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\GroupeArticleController;
 use App\Http\Controllers\Admin\UserController;
 use LdapRecord\Container;
 use App\Http\Controllers\Admin\UserSapController;
+use App\Http\Controllers\Admin\RolePermisionController;
+use App\Http\Controllers\Admin\AdminUserController;
 use LdapRecord\Models\ActiveDirectory\User;
 /*
 |--------------------------------------------------------------------------
@@ -127,6 +129,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/mail_recipients/{mail_recipient}', [App\Http\Controllers\Admin\Mail_recipientsController::class, 'destroy'])->name('mail_recipients.destroy');
 
 
+
+
+    /// roles and permissions routes
+    Route::get('roles', [RolePermisionController::class, 'index'])->name('roles.index');
+    Route::get('roles/create', [RolePermisionController::class, 'create'])->name('roles.create');
+    Route::post('roles/store', [RolePermisionController::class, 'store'])->name('roles.store');
+    Route::get('roles/edit/{id}', [RolePermisionController::class, 'edit'])->name('roles.edit');
+    Route::post('roles/update/{id}', [RolePermisionController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{role}', [RolePermisionController::class, 'destroy'])->name('roles.destroy');
+
+
+    /// admin users routes
+   Route::resource('role-users', AdminUserController::class);
+
+
 });
 // routes/web.php
 Route::get('/sap-materials', [SapController::class, 'showMaterials']);
@@ -156,6 +173,47 @@ Route::get('/test-email', function () {
     } catch (\Exception $e) {
         return '❌ Failed to send email: ' . $e->getMessage();
     }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+use LdapRecord\Models\ActiveDirectory\Group;
+
+Route::get('/test-group', function () {
+    $group = Group::where('cn', '=', 'gr-IT')->first();
+
+    if (!$group) {
+        return "Group 'gr-IT' not found!";
+    }
+
+    return "Found group: " . $group->distinguishedname[0];
+});
+
+
+
+Route::get('/test-group-members', function () {
+    $group = Group::where('cn', '=', 'gr-IT')->first();
+
+    if (!$group) {
+        return "Group 'gr-IT' not found!";
+    }
+
+    $members = $group->members()->get();
+
+    foreach ($members as $member) {
+        echo $member->cn[0] . ' - ' . ($member->mail[0] ?? 'No email') . "<br>";
+    }
+
+    return "Total members: " . $members->count();
 });
 
 

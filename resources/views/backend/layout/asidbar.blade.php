@@ -36,6 +36,7 @@
             </a>
         </li>
 
+
         <li class="{{ setSidebarActive('typearticles.index') }}">
             <a class="nav-link" href="{{ route('typearticles.index') }}">
                 <i class="far fa-square"></i>
@@ -90,18 +91,34 @@
             </ul>
         </li>
 
-        <li class="">
+        <li class="{{ setSidebarActive('users.index') }}">
             <a class="nav-link" href="{{ route('users.index') }}">
                 <i class="fas fa-user"></i> <!-- icône "user" -->
                 <span>User</span>
             </a>
         </li>
-        <li class="">
+        @if(hasPermission(['usersap index','usersap update']) || isSuperAdmin())
+        <li class="{{ setSidebarActive('usersap.index') }}">
             <a class="nav-link" href="{{ route('usersap.index') }}">
                 <i id="toggleIcon" class="fas fa-eye"></i>
                 <span>User SAP</span>
             </a>
         </li>
+        @endif
+
+
+        <li class="dropdown {{ setSidebarActive(['role.index', 'layout-transparent', 'layout-top-navigation']) }}">
+            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                <i class="fas fa-users"></i>
+                <span>Access Management</span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="nav-link {{ setSidebarActive('role.index') }}" href="{{ route('roles.index') }}">Role and Permission</a></li>
+                <li><a class="nav-link {{ setSidebarActive('role-users.index') }}" href="{{ route('role-users.index') }}">Role user</a></li>
+
+            </ul>
+        </li>
+
 
     </ul>
 

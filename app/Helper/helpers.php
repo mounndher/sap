@@ -19,4 +19,15 @@ if (!function_exists('setSidebarActive')) {
         }
         return '';
     }
+
+
+}
+
+function hasPermission($permission)
+{
+   // dd($permission);
+    return auth()->guard('web')->user()->hasAnyPermission($permission);
+}
+function isSuperAdmin() {
+    return auth()->user()->hasRole('Super Admin');
 }

@@ -7,10 +7,15 @@ use App\Models\UserSap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+
 class UserSapController extends Controller
 {
     //
-      public function index()
+    public function __construct() {
+          $this->middleware(['permission:usersap index'])->only(['index']);
+          $this->middleware(['permission:usersap update'])->only(['update']);
+    }
+    public function index()
     {
         $usersap = UserSap::first();
         //dd($settings);

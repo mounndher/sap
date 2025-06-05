@@ -24,6 +24,11 @@ use Illuminate\Support\Facades\Log;
 class ArticleController extends Controller
 {
     //
+
+     public function __construct() {
+         
+          $this->middleware(['permission:achat update'])->only(['updateAchat']);
+    }
     public function index()
     {
         $articles = Article::with('typeArticle')->get();

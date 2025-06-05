@@ -1,0 +1,43 @@
+LDAP_LOGGING=true
+LDAP_CONNECTION=default
+LDAP_HOST=10.20.30.5
+LDAP_PORT=389
+LDAP_BASE_DN="DC=local,DC=pharma"
+LDAP_USERNAME="CN=glpi,OU=IT,OU=Users,OU=PharmaInvest Production,DC=local,DC=pharma"
+LDAP_PASSWORD="pharma@2025"
+LDAP_USE_SSL=false
+LDAP_USE_TLS=false
+LDAP_TIMEOUT=5
+
+
+
+use LdapRecord\Models\ActiveDirectory\Group;
+
+Route::get('/test-group', function () {
+    $group = Group::where('cn', '=', 'gr-IT')->first();
+
+    if (!$group) {
+        return "Group 'gr-IT' not found!";
+    }
+
+    return "Found group: " . $group->distinguishedname[0];
+});
+
+
+
+Route::get('/test-group-members', function () {
+    $group = Group::where('cn', '=', 'gr-IT')->first();
+
+    if (!$group) {
+        return "Group 'gr-IT' not found!";
+    }
+
+    $members = $group->members()->get();
+
+    foreach ($members as $member) {
+        echo $member->cn[0] . ' - ' . ($member->mail[0] ?? 'No email') . "<br>";
+    }
+
+    return "Total members: " . $members->count();
+});
+

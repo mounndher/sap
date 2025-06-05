@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Spatie\Permission\Traits\HasRoles;
 use LdapRecord\Laravel\Auth\AuthenticatesWithLdap; // trait to authenticate with LDAP
 use LdapRecord\Laravel\Auth\LdapAuthenticatable;    // interface for LDAP auth
 use LdapRecord\Laravel\Auth\HasLdapUser;            // trait to access LDAP user info
@@ -14,6 +14,7 @@ use LdapRecord\Laravel\Auth\HasLdapUser;            // trait to access LDAP user
 class User extends Authenticatable implements LdapAuthenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use HasRoles;
     use AuthenticatesWithLdap, HasLdapUser;  // Add LDAP traits here
 
     /**
