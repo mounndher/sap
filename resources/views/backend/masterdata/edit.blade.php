@@ -7,7 +7,7 @@ return match($status) {
 0 => 'invalid',
 1 => 'valid',
 2 => 'in-progress',
-default => '',
+
 };
 }
 
@@ -70,7 +70,7 @@ $comptabiliteStatus = statusClass($comp->status ?? null);
                 <div id="form-general" class="settings-form {{ session('active_tab', 'general') == 'general' ? '' : 'd-none' }}">
                     @include('backend.masterdata.sectionedit.donnesdebaseedit')
                 </div>
-                 @if(hasPermission(['achat edit','achat update']) || isSuperAdmin())
+                 @if(hasPermission(['achat update']) || isSuperAdmin())
                 <div id="form-achat" class="settings-form {{ session('active_tab') == 'achat' ? '' : 'd-none' }}">
                     @include('backend.masterdata.sectionedit.achatedit')
                 </div>
