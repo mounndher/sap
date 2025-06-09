@@ -9,6 +9,10 @@ use App\Models\Mail_settings;
 class Mail_settingsContoller extends Controller
 {
     //
+    public function __construct() {
+        $this->middleware("permission:Smtp index")->only(['index']);
+        $this->middleware("permission:Smtp update")->only(['update']);
+    }
     public function index()
     {
         $mailSettings = Mail_settings::first();

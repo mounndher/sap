@@ -14,6 +14,7 @@ class AdminUserController extends Controller
     public function index()
     {
         //
+        
          $users= \App\Models\User::all();
         return view('backend.role-users.index',compact('users'));
     }

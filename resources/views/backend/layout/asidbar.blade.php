@@ -45,7 +45,7 @@
             </a>
         </li>
         @endif
-        @if(hasPermission(["Class valoris  index","Class valoris create","Class valoris update","Class valoris delete"]) || isSuperAdmin())
+        @if(hasPermission(["Class valoris index","Class valoris create","Class valoris update","Class valoris delete"]) || isSuperAdmin())
         <li class="{{ setSidebarActive('classvs.index') }}">
             <a class="nav-link" href="{{ route('classvs.index') }}">
                 <i class="far fa-square"></i>
@@ -74,28 +74,37 @@
             </a>
         </li>
         @endif
+        @if(hasPermission(["Smtp index","tempalte email index",'Emailuser index']) || isSuperAdmin())
+
         <li class="dropdown {{ setSidebarActive(['mail_settings.*', 'mail_recipients.*', 'layout-top-navigation']) }}">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                 <i class="fas fa-columns"></i>
                 <span>Email</span>
             </a>
             <ul class="dropdown-menu">
+                @if(hasPermission(["Smtp index","Smtp update"]) || isSuperAdmin())
                 <li class="{{ request()->routeIs('mail_settings.index') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('mail_settings.index') }}">Smtp Setting</a>
                 </li>
+                @endif
+                @if(hasPermission(["Emailuser index","Emailuser create","Emailuser delete","Emailuser update"]) || isSuperAdmin())
                 <li><a class="nav-link " href="{{ route('mail_recipients.index') }}">Email user</a></li>
-
+                @endif
+                @if(hasPermission(["tempalte email index","tempalte email update"]) || isSuperAdmin())
                 <li><a class="nav-link " href="{{ route('template_email_validation.index') }}">Email template validtion</a></li>
-
+                @endif
             </ul>
         </li>
-
+        @endif
+        @if((hasPermission(['usersap index']) || isSuperAdmin()))
         <li class="{{ setSidebarActive('users.index') }}">
             <a class="nav-link" href="{{ route('users.index') }}">
                 <i class="fas fa-user"></i> <!-- icône "user" -->
                 <span>User</span>
             </a>
         </li>
+        @endif
+
         @if(hasPermission(['usersap index','usersap update']) || isSuperAdmin())
         <li class="{{ setSidebarActive('usersap.index') }}">
             <a class="nav-link" href="{{ route('usersap.index') }}">
@@ -105,18 +114,21 @@
         </li>
         @endif
 
-
+        @if(hasPermission(["access management index"]) || isSuperAdmin())
         <li class="dropdown {{ setSidebarActive(['role.index', 'layout-transparent', 'layout-top-navigation']) }}">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                 <i class="fas fa-users"></i>
                 <span>Access Management</span>
             </a>
             <ul class="dropdown-menu">
+                @if(hasPermission(["access management index","access management update","access management index"]) || isSuperAdmin())
                 <li><a class="nav-link {{ setSidebarActive('role.index') }}" href="{{ route('roles.index') }}">Role and Permission</a></li>
+                @endif
                 <li><a class="nav-link {{ setSidebarActive('role-users.index') }}" href="{{ route('role-users.index') }}">Role user</a></li>
 
             </ul>
         </li>
+        @endif
 
 
     </ul>

@@ -8,13 +8,17 @@ use App\Models\Validation;
 class TemplateEmailValidationController extends Controller
 {
     //
+    public function __construct() {
+        $this->middleware("permission:tempalte email index")->only(['index']);
+        $this->middleware("permission:tempalte email update")->only(['update']);
+    }
     public function index()
     {
         // Logic to display the template email validation page
         $template= Validation::first();
         return view('backend.template_email_validation.index',compact('template'));
     }
-   
+
     public function update(Request $request, $id)
     {
         // Logic to update the template email validation

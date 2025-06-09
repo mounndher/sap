@@ -9,6 +9,12 @@ use App\Models\Mail_recipients;
 class Mail_recipientsController extends Controller
 {
     //
+    public function __construct() {
+        $this->middleware("permission:Emailuser index")->only(['index']);
+        $this->middleware("permission:Emailuser create")->only(['create', 'store']);
+        $this->middleware("permission:Emailuser update")->only(['edit', 'update']);
+        $this->middleware("permission:Emailuser delete")->only(['destroy']);
+    }
     public function index()
     {
         // Logic to retrieve and display mail recipients

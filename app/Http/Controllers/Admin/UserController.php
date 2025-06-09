@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     //
+    public function __construct() {
+        $this->middleware("permission:usersap index")->only(['index']);
+
+    }
+
     public function index()
     {
         // Logic to retrieve and display users

@@ -12,6 +12,14 @@ use Spatie\Permission\Models\Permission;
 class RolePermisionController extends Controller
 {
     //
+    public function __construct() {
+          $this->middleware(['permission:access management index'])->only(['index']);
+          $this->middleware(['permission:access management create'])->only(['create']);
+          $this->middleware(['permission:access management update'])->only(['update']);
+          $this->middleware(['permission:access management delete'])->only(['destroy']);
+
+    }
+
     public function index()
     {
         // Logic to display roles and permissions

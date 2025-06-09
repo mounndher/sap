@@ -8,6 +8,12 @@ use App\Models\Classv;
 use App\Models\TypeArticle;
 class ClassvController extends Controller
 {
+    public function __construct() {
+        $this->middleware("permission:Class valoris index")->only(['index']);
+        $this->middleware("permission:Class valoris create")->only(['create', 'store']);
+        $this->middleware("permission:Class valoris update")->only(['edit', 'update']);
+        $this->middleware("permission:Class valoris delete")->only(['destroy']);
+    }
 
       public function index()
     {
