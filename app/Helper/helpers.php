@@ -31,3 +31,14 @@ function hasPermission($permission)
 function isSuperAdmin() {
     return auth()->user()->hasRole('Super Admin');
 }
+
+if (!function_exists('statusClass')) {
+    function statusClass($status) {
+        return match($status) {
+            0 => 'invalid',
+            1 => 'valid',
+            2 => 'in-progress',
+            default => '',
+        };
+    }
+}

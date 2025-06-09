@@ -9,6 +9,11 @@ use App\Models\settingsLdap;
 class SettingLdapController extends Controller
 {
     //
+    public function __construct() {
+        $this->middleware("permission:setting ldap index")->only(['index']);
+        $this->middleware("permission:setting ldap update")->only(['update']);
+
+    }
     public function index()
     {
         $settings = settingsLdap::first();

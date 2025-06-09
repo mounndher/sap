@@ -8,7 +8,13 @@ use \App\Models\TypeArticle;
 
 class TypeArticleController extends Controller
 {
-    //
+    //"Type d'Article index","Type d'Article create","Type d'Article create","Type d'Article delete"
+      public function __construct() {
+        $this->middleware("permission:Type d'Article index")->only(['index']);
+        $this->middleware("permission:Type d'Article create")->only(['create', 'store']);
+        $this->middleware("permission:Type d'Article update")->only(['update']);
+        $this->middleware("permission:Type d'Article delete")->only(['destroy']);
+    }
     public function index()
     {
         $typeArticles = TypeArticle::all();

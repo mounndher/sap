@@ -86,13 +86,22 @@
         </div>
 
         <div class="card-footer bg-whitesmoke text-md-right">
+            @can('achat update')
             <button type="submit" class="btn btn-success" id="save-achat-btn">Enregistrer</button>
-            @if ($achat->status == 0)
+            @endcan
+            @can('achat valider')
+            @if (!is_null($achat) && $achat->status == 0)
             <button class="btn btn-success validate-btn" data-url="{{ route('achat.validerachat', $achat->id) }}">Valider</button>
             @endif
-            @if ($achat->status == 1)
+            @endcan
+
+            @can('achat invalider')
+            @if (!is_null($achat) && $achat->status == 1)
             <button class="btn btn-success invalidate-btn" data-url="{{ route('achat.invaliderachat', $achat->id) }}">InValider</button>
             @endif
+            @endcan
+
+
         </div>
     </form>
 </div>
@@ -159,60 +168,58 @@
     });
 
 
-  $(document).on('click', '.validate-btn', function() {
-    let url = $(this).data('url');
-    let button = $(this);
+    $(document).on('click', '.validate-btn', function() {
+        let url = $(this).data('url');
+        let button = $(this);
 
-    button.prop('disabled', true).text('Validation...');
+        button.prop('disabled', true).text('Validation...');
 
-    axios.post(url, {}, {
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    })
-    .then(function(response) {
-        toastr.success(response.data.message || 'Succès');
-        // استبدال زر "Valider" بزر "Invalider"
-        button.replaceWith(`
+        axios.post(url, {}, {
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+            .then(function(response) {
+                toastr.success(response.data.message || 'Succès');
+                // استبدال زر "Valider" بزر "Invalider"
+                button.replaceWith(`
             <button class="btn btn-danger invalidate-btn" data-url="${button.data('url').replace('validerachat', 'invaliderachat')}">Invalider</button>
         `);
 
-        // تحديث تبويب Achat
-        $('.nav-link.achat-tab').removeClass('invalid valid').addClass('valid');
-    })
-    .catch(function(error) {
-        toastr.error('Erreur lors de la validation');
-        button.prop('disabled', false).text('Valider');
+                // تحديث تبويب Achat
+                $('.nav-link.achat-tab').removeClass('invalid valid').addClass('valid');
+            })
+            .catch(function(error) {
+                toastr.error('Erreur lors de la validation');
+                button.prop('disabled', false).text('Valider');
+            });
     });
-});
 
-$(document).on('click', '.invalidate-btn', function() {
-    let url = $(this).data('url');
-    let button = $(this);
+    $(document).on('click', '.invalidate-btn', function() {
+        let url = $(this).data('url');
+        let button = $(this);
 
-    button.prop('disabled', true).text('InValidation...');
+        button.prop('disabled', true).text('InValidation...');
 
-    axios.post(url, {}, {
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    })
-    .then(function(response) {
-        toastr.success(response.data.message || 'Succès');
-        // استبدال زر "Invalider" بزر "Valider"
-        button.replaceWith(`
+        axios.post(url, {}, {
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+            .then(function(response) {
+                toastr.success(response.data.message || 'Succès');
+                // استبدال زر "Invalider" بزر "Valider"
+                button.replaceWith(`
             <button class="btn btn-success validate-btn" data-url="${button.data('url').replace('invaliderachat', 'validerachat')}">Valider</button>
         `);
 
-        // تحديث تبويب Achat
-        $('.nav-link.achat-tab').removeClass('invalid valid').addClass('invalid');
-    })
-    .catch(function(error) {
-        toastr.error('Erreur lors de la validation');
-        button.prop('disabled', false).text('Invalider');
+                // تحديث تبويب Achat
+                $('.nav-link.achat-tab').removeClass('invalid valid').addClass('invalid');
+            })
+            .catch(function(error) {
+                toastr.error('Erreur lors de la validation');
+                button.prop('disabled', false).text('Invalider');
+            });
     });
-});
-
-
 
 </script>

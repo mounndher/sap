@@ -86,6 +86,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Page Specific JS File -->
   <script src="{{ asset('admin/js/page/modules-datatables.js')}}"></script>
+@vite(['resources/js/app.js'])
+
+
 
 
   <script>

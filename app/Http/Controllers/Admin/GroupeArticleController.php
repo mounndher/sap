@@ -9,6 +9,13 @@ use App\Models\TypeArticle;
 class GroupeArticleController extends Controller
 {
     //
+     public function __construct() {
+        $this->middleware("permission:Groupe Article index")->only(['index']);
+        $this->middleware("permission:Groupe Article create")->only(['create', 'store']);
+        $this->middleware("permission:Groupe Article update")->only(['update']);
+        $this->middleware("permission:Groupe Article delete")->only(['destroy']);
+    }
+
     public function index()
     {
         $groupeArticles = GroupeArticle::with('typeArticle')->get(); // eager load typeArticle

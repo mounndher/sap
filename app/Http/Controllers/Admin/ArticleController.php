@@ -26,8 +26,23 @@ class ArticleController extends Controller
     //
 
      public function __construct() {
-         
+          //$this->middleware(['permission:achat edit'])->only(['edit']);
           $this->middleware(['permission:achat update'])->only(['updateAchat']);
+          $this->middleware(['permission:achat valider'])->only(['validerachat']);
+          $this->middleware(['permission:achat invalider'])->only(['invaliderachat']);
+
+         // $this->middleware(['permission:Comptabilité edit'])->only(['edit']);
+          $this->middleware(['permission:Comptabilité update'])->only(['updateComptabilite']);
+          $this->middleware(['permission:Comptabilité valider'])->only(['validercomptabilite']);
+          $this->middleware(['permission:Comptabilité invalider'])->only(['invalidercomptabilite']);
+
+          $this->middleware(['permission:edit Article'])->only(['edit']);
+          $this->middleware(['permission:Article index'])->only(['index']);
+          $this->middleware(['permission:Article create'])->only(['create', 'storeDonnesdebase']);
+          $this->middleware(['permission:Article update'])->only(['updateDonnesdebase']);
+          $this->middleware(['permission:Article delete'])->only(['destroy']);
+
+
     }
     public function index()
     {
@@ -70,58 +85,60 @@ class ArticleController extends Controller
 
         ]);
     }
-    public function storeDonnesdebase(Request $request)
-    {
-        $request->validate([
-            'MAKTX' => 'required|string|max:40',
-            'MTART' => 'required|string|max:4',
-            'MATKL' => 'required|string|max:9',
-            'MEINS' => 'required',
-            'XCHPF' => 'required',
-            // 'EKGRP' => 'required',
-        ]);
 
-        $exists = Article::where('MAKTX', $request->MAKTX)->first();
 
-        if ($exists) {
-            return redirect()->back()->with([
-                'message' => 'Désolé, le Designation est déjà enregistré.',
-                'alert-type' => 'error',
-            ])->withInput();
-        }
+public function storeDonnesdebase(Request $request)
+{
+    $request->validate([
+        'MAKTX' => 'required|string|max:40',
+        'MTART' => 'required|string|max:4',
+        'MATKL' => 'required|string|max:9',
+        'MEINS' => 'required',
+        'XCHPF' => 'required',
+    ]);
 
-        $article = new Article();
-        $article->MTART = $request->MTART;
-        $article->MATKL = $request->MATKL;
-        $article->MEINS = $request->MEINS;
-        $article->XCHPF = $request->XCHPF;
-        $article->MAKTX = $request->MAKTX;
-        $article->status = $request->status ?? 0;
-        $article->save();
-        //dd($article);
+    $exists = Article::where('MAKTX', $request->MAKTX)->first();
 
-        // Redirect to create with article_id and step=achat to show Achat tab
-
-        // ✅ Fetch all recipient emails $recipients = Mail_recipient::where('status', 1)->pluck('email')->toArray();
-
-        $recipients = Mail_recipients::where('status', 1)->pluck('email')->toArray();
-        // Send email to all recipients
-        if (count($recipients) > 0) {
-            Mail::to($recipients)->send(new ArticleAddedMail($article));
-        } else {
-            // Handle case where no recipients are found
-            return redirect()->back()->with([
-                'message' => 'Aucun destinataire trouvé pour l\'envoi de l\'email.',
-                'alert-type' => 'warning',
-            ]);
-        }
-
-        return redirect()->route('articles.index', $article->id);
+    if ($exists) {
+        return redirect()->back()->with([
+            'message' => 'Désolé, le Designation est déjà enregistré.',
+            'alert-type' => 'error',
+        ])->withInput();
     }
+
+    $article = new Article();
+    $article->MTART = $request->MTART;
+    $article->MATKL = $request->MATKL;
+    $article->MEINS = $request->MEINS;
+    $article->XCHPF = $request->XCHPF;
+    $article->MAKTX = $request->MAKTX;
+    $article->status = $request->status ?? 0;
+    $article->save();
+
+    // ✅ Dispatch Pusher Event
+
+    $recipients = Mail_recipients::where('status', 1)->pluck('email')->toArray();
+
+    if (count($recipients) > 0) {
+        Mail::to($recipients)->send(new ArticleAddedMail($article));
+    } else {
+        return redirect()->back()->with([
+            'message' => 'Aucun destinataire trouvé pour l\'envoi de l\'email.',
+            'alert-type' => 'warning',
+        ]);
+    }
+
+    return redirect()->route('articles.index', $article->id)->with([
+        'message' => 'Article ajouté avec succès, email envoyé et notification en temps réel envoyée.',
+        'alert-type' => 'success',
+    ]);
+}
+
 
 
     public function edit($id)
     {
+        //dd(auth()->user()->getAllPermissions()->pluck('name'));
         $userSap = UserSap::first(); // Assuming you have a UserSap model to fetch SAP credentials
         if (!$userSap) {
             return view('backend.masterdata.create', ['materialsData' => null, 'error' => 'SAP user credentials not found']);

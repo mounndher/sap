@@ -17,57 +17,55 @@
 
         <li class="menu-header">Donneés de base</li>
 
-        <li class="dropdown {{ setSidebarActive(['layout-default', 'layout-transparent', 'layout-top-navigation']) }}">
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                <i class="fas fa-columns"></i>
-                <span>Layout</span>
-            </a>
-            <ul class="dropdown-menu">
-                <li><a class="nav-link" href="layout-default.html">Default Layout</a></li>
-                <li><a class="nav-link" href="layout-transparent.html">Transparent Sidebar</a></li>
-                <li><a class="nav-link" href="layout-top-navigation.html">Top Navigation</a></li>
-            </ul>
-        </li>
 
+        @if(hasPermission(['Article index','Article create','edit Article']) || isSuperAdmin())
         <li class="{{ setSidebarActive('articles.index') }}">
             <a class="nav-link" href="{{ route('articles.index') }}">
                 <i class="fas fa-newspaper"></i>
                 <span>Article Page</span>
             </a>
         </li>
+        @endif
 
-
+        @if(hasPermission(["Type d'Article index","Type d'Article create","Type d'Article update","Type d'Article delete"]) || isSuperAdmin())
+        <li class="{{ setSidebarActive('articles.index') }}">
         <li class="{{ setSidebarActive('typearticles.index') }}">
             <a class="nav-link" href="{{ route('typearticles.index') }}">
                 <i class="far fa-square"></i>
                 <span>Type d'Article Page</span>
             </a>
         </li>
+        @endif
 
+        @if(hasPermission(["Groupes d Acheteurs index","Groupes d Acheteurs create","Groupes d Acheteurs update","Groupes d Acheteurs delete"]) || isSuperAdmin())
         <li class="{{ setSidebarActive('groupearticles.index') }}">
             <a class="nav-link" href="{{ route('groupearticles.index') }}">
                 <i class="far fa-square"></i>
                 <span>Groupe d'Article Page</span>
             </a>
         </li>
-
+        @endif
+        @if(hasPermission(["Class valoris  index","Class valoris create","Class valoris update","Class valoris delete"]) || isSuperAdmin())
         <li class="{{ setSidebarActive('classvs.index') }}">
             <a class="nav-link" href="{{ route('classvs.index') }}">
                 <i class="far fa-square"></i>
                 <span>Class valoris</span>
             </a>
         </li>
+        @endif
 
+        @if(hasPermission(["Groupes d Acheteurs index","Groupes d Acheteurs create","Groupes d Acheteurs update","Groupes d Acheteurs delete"]) || isSuperAdmin())
         <li class="menu-header">Achat</li>
-
         <li class="{{ setSidebarActive('groupeacheteurs.index') }}">
             <a class="nav-link" href="{{ route('groupeacheteurs.index') }}">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span>Groupe d'Acheteur Page</span>
             </a>
         </li>
+        @endif
 
         <li class="menu-header">Setting</li>
+        @if(hasPermission(["setting ldap index","setting ldap update"]) || isSuperAdmin())
 
         <li class="{{ setSidebarActive('Ldapsetting.index') }}">
             <a class="nav-link" href="{{ route('Ldapsetting.index') }}">
@@ -75,6 +73,7 @@
                 <span>Setting Ldap Page</span>
             </a>
         </li>
+        @endif
         <li class="dropdown {{ setSidebarActive(['mail_settings.*', 'mail_recipients.*', 'layout-top-navigation']) }}">
             <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                 <i class="fas fa-columns"></i>

@@ -8,6 +8,14 @@ use App\Models\GroupeAcheteur;
 class GroupeAcheteurcontroller extends Controller
 {
     //
+      public function __construct() {
+        $this->middleware("permission:Groupes d Acheteurs index")->only(['index']);
+        $this->middleware("permission:Groupes d Acheteurs create")->only(['create', 'store']);
+        $this->middleware("permission:Groupes d Acheteurs update")->only(['update']);
+        $this->middleware("permission:Groupes d Acheteurs delete")->only(['destroy']);
+    }
+
+
       public function index()
     {
         $groupeAcheteurs = GroupeAcheteur::all();
