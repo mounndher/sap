@@ -67,6 +67,7 @@ return [
         'database' => [
             'model' => App\Models\User::class,
             'sync_passwords' => true,
+            'insert' => true, // ⬅️ this allows automatic insertion
             'sync_attributes' => [
                   'username' => 'samaccountname',  // ✅ Unique login
                    'name' => 'cn',                  // ✅ Nom complet

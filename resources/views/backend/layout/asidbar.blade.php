@@ -6,7 +6,7 @@
         <a href="">St</a>
     </div>
     <ul class="sidebar-menu">
-        <li class="">Dashboard</li>
+
 
         <li class="{{ setSidebarActive('dashboard') }}">
             <a href="{{ route('dashboard') }}" class="nav-link ">
@@ -113,6 +113,14 @@
             </a>
         </li>
         @endif
+
+        <li class="{{ setSidebarActive('setting.index') }}">
+            <a class="nav-link" href="{{ route('setting.index') }}">
+                <i id="toggleIcon" class="fas fa-eye"></i>
+                <span>Setting</span>
+            </a>
+        </li>
+
 
         @if(hasPermission(["access management index"]) || isSuperAdmin())
         <li class="dropdown {{ setSidebarActive(['role.index', 'layout-transparent', 'layout-top-navigation']) }}">

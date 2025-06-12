@@ -21,6 +21,9 @@
                         <option value="No data available"></option>
                         @endif
                     </datalist>
+                    <div id="designation-error" class="text-danger mt-2" style="display:none;">
+                        Ce nom existe déjà. Veuillez entrer une désignation différente.
+                    </div>
                 </div>
             </div>
 
@@ -89,7 +92,7 @@
         <div class="card-footer bg-whitesmoke text-md-right">
             <button class="btn btn-primary" type="submit">Enregistrer</button>
 
-           
+
         </div>
     </form>
 
@@ -105,21 +108,21 @@
 <script>
 
 
-
+var baseUrl = "{{ url('groupe-articless') }}/";
     $(document).ready(function() {
         $('#type-article').on('change', function() {
             var typeArticleId = $(this).val();
 
             if (typeArticleId) {
                 $.ajax({
-                    url: '/groupe-articless/' + typeArticleId
+                    url: baseUrl + typeArticleId
                     , type: 'GET'
                     , dataType: 'json'
                     , success: function(data) {
                         $('#groupe-articles').empty();
                         $('#groupe-articles').append('<option disabled selected>Select a groupe</option>');
                         $.each(data, function(key, groupe) {
-                            $('#groupe-articles').append('<option value="' + groupe.value + '">' + groupe.name + '</option>');
+                            $('#groupe-articles').append('<option value="' + groupe.id  + '">' + groupe.name + '</option>');
                         });
                     }
                     , error: function() {
@@ -133,7 +136,34 @@
             }
         });
     });
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('site-title');
+    const errorDiv = document.getElementById('designation-error');
+    const options = Array.from(document.getElementById('designation-options').options)
+                         .map(opt => opt.value.trim().toLowerCase())
+                         .filter(v => v !== '');
 
+    input.addEventListener('blur', function() {
+        const value = input.value.trim().toLowerCase();
+        if (options.includes(value)) {
+            errorDiv.style.display = 'block';
+            input.classList.add('is-invalid');
+        } else {
+            errorDiv.style.display = 'none';
+            input.classList.remove('is-invalid');
+        }
+    });
+
+    // Optional: Prevent form submit if duplicate
+    input.form && input.form.addEventListener('submit', function(e) {
+        const value = input.value.trim().toLowerCase();
+        if (options.includes(value)) {
+            errorDiv.style.display = 'block';
+            input.classList.add('is-invalid');
+            e.preventDefault();
+        }
+    });
+});
 
 
 </script>

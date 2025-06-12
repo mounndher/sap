@@ -67,14 +67,15 @@
                 <!-- Achat form (hidden by default) -->
                 <div id="form-achat" class="settings-form d-none">
 
-
+                Vous devez d'abord compléter les Données de base avant d'accéder à cette section.
                 </div>
 
 
 
                 <!-- Comptabilité form (hidden by default) -->
                 <div id="form-comptabilite" class="settings-form d-none">
-                  
+                       Vous devez d'abord compléter les Données de base avant d'accéder à cette section.
+
                 </div>
 
                 <!-- Remove the old SEO form as it's not needed anymore -->

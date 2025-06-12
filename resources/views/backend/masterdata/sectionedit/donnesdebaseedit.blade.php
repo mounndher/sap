@@ -64,14 +64,14 @@
                 </div>
             </div>
             <div class="form-group row align-items-center">
-                <label for="groupe-articles" class="form-control-label col-sm-3 text-md-right">Groupe d'articles</label>
-                <div class="col-sm-6 col-md-9">
-                    <select class="form-control select2" name="MATKL" id="groupe-articles">
-                        <option disabled>Select a groupe</option>
-                        <!-- Options will be loaded dynamically via AJAX -->
-                    </select>
-                </div>
-            </div>
+    <label for="groupe-articles" class="form-control-label col-sm-3 text-md-right">Groupe d'articles</label>
+    <div class="col-sm-6 col-md-9">
+        <select class="form-control select2" name="MATKL" id="groupe-articles">
+            <option disabled>Chargement...</option>
+        </select>
+    </div>
+</div>
+
 
 
 
@@ -98,14 +98,27 @@
 
         </div>
         <div class="card-footer bg-whitesmoke text-md-right">
-            <button class="btn btn-primary" id="save-btn">Save Changes</button>
+            @if ($articles->status == 0)
+        {{-- Show Delete button when validated --}}
+
+
+        {{-- Show Save button when not validated --}}
+        <button class="btn btn-primary" id="save-btn">Save Changes</button>
+        @else
+         <button class="btn btn-primary" id="save-btn">Save Changes</button>
+    @endif
+
     </form>
+    @can('valider donneesdebase')
     @if ($articles->status == 0)
     <button class="btn btn-success validatee-btn" data-id="{{ $articles->id }}">Valider</button>
     @endif
+    @endcan
+    @can('invalider donneesdebase')
     @if ($articles->status == 1)
     <button class="btn btn-success invalidatee-btn" data-id="{{ $articles->id }}">InValider</button>
     @endif
+    @endcan
 
 
 </div>
@@ -124,10 +137,13 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+    var articleBaseUrl = "{{ url('articles') }}/";
     console.log("Script loaded");
 
     // ✅ Use delegated event binding in case content is dynamic
    // ✅ Valider Donnes de Base
+var articleBaseUrl = "{{ url('articles') }}/";
+
 $(document).on('click', '.validatee-btn', function () {
     let articleId = $(this).data('id');
     let button = $(this);
@@ -139,23 +155,16 @@ $(document).on('click', '.validatee-btn', function () {
 
     button.prop('disabled', true).text('Validation...');
 
-    axios.post(`/articles/validerdonnesdebase/${articleId}`, {}, {
+    axios.post(articleBaseUrl + 'validerdonnesdebase/' + articleId, {}, {
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     })
     .then(function (response) {
         toastr.success(response.data.message || 'Succès');
-
-        // Remplacer le bouton
-        button.replaceWith(`
-            <button class="btn btn-danger invalidatee-btn" data-id="${articleId}">InValider</button>
-        `);
-
-        // ✅ Changer l'état du tab
-        $('.nav-link.donnesdebase-tab')
-            .removeClass('invalid in-progress')
-            .addClass('valid');
+        button.replaceWith(`<button class="btn btn-danger invalidatee-btn" data-id="${articleId}">InValider</button>`);
+          //  $("#action-buttons").load(location.href + " #action-buttons > *");
+        $('.nav-link.donnesdebase-tab').removeClass('invalid in-progress').addClass('valid');
     })
     .catch(function (error) {
         console.error("AJAX Error:", error);
@@ -164,7 +173,6 @@ $(document).on('click', '.validatee-btn', function () {
     });
 });
 
-// ✅ Invalider Donnes de Base
 $(document).on('click', '.invalidatee-btn', function () {
     let articleId = $(this).data('id');
     let button = $(this);
@@ -176,23 +184,16 @@ $(document).on('click', '.invalidatee-btn', function () {
 
     button.prop('disabled', true).text('InValidation...');
 
-    axios.post(`/articles/invaliderdonnesdebase/${articleId}`, {}, {
+    axios.post(articleBaseUrl + 'invaliderdonnesdebase/' + articleId, {}, {
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     })
     .then(function (response) {
         toastr.success(response.data.message || 'Données invalidées');
+          //$("#action-buttons").load(location.href + " #action-buttons > *");
+        $('.nav-link.donnesdebase-tab').removeClass('valid in-progress').addClass('invalid');
 
-        // Remplacer le bouton
-        button.replaceWith(`
-            <button class="btn btn-success validatee-btn" data-id="${articleId}">Valider</button>
-        `);
-
-        // ✅ Changer l'état du tab
-        $('.nav-link.donnesdebase-tab')
-            .removeClass('valid in-progress')
-            .addClass('invalid');
     })
     .catch(function (error) {
         console.error("AJAX Error:", error);
@@ -214,47 +215,44 @@ $(document).on('click', '.invalidatee-btn', function () {
 
 
 
-    $(document).ready(function() {
+      $(document).ready(function () {
         function loadGroupes(typeId, selectedValue = null) {
             if (!typeId) return;
 
             axios.post("{{ route('get.groupes.by.type') }}", {
-                    type_id: typeId
-                }, {
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                })
-                .then(response => {
-                    const groupes = response.data;
-                    const select = $('#groupe-articles');
-                    select.empty();
-                    select.append(`<option value="">Choisir un groupe</option>`);
-                    groupes.forEach(groupe => {
-                        select.append(
-                            `<option value="${groupe.id}" ${selectedValue == groupe.id ? 'selected' : ''}>${groupe.name}</option>`
-                        );
-                    });
-                })
-                .catch(error => {
-                    console.error('Erreur de chargement des groupes:', error);
-                    toastr.error("Échec de chargement des groupes.");
+                type_id: typeId
+            }, {
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            })
+            .then(response => {
+                const groupes = response.data;
+                const select = $('#groupe-articles');
+                select.empty().append(`<option value="">Choisir un groupe</option>`);
+
+                groupes.forEach(groupe => {
+                    select.append(`<option value="${groupe.id}" ${selectedValue == groupe.id ? 'selected' : ''}>${groupe.name}</option>`);
                 });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des groupes:', error);
+                toastr.error("Échec du chargement des groupes.");
+            });
         }
 
-        // Lors du changement de type
-        $('#mtart').change(function() {
-            const typeId = $(this).val();
-            loadGroupes(typeId);
-        });
-
-        // ✅ Charger automatiquement si MTART est déjà défini (utile pour le mode édition)
+        // Charger au démarrage
         const initialType = $('#mtart').val();
         const selectedGroupId = "{{ $articles->MATKL }}";
         if (initialType) {
             loadGroupes(initialType, selectedGroupId);
         }
-    });
 
+        // Changement de type
+        $('#mtart').on('change', function () {
+            const typeId = $(this).val();
+            loadGroupes(typeId);
+        });
+    });
 </script>
 @endpush

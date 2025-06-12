@@ -12,6 +12,7 @@ use LdapRecord\Container;
 use App\Http\Controllers\Admin\UserSapController;
 use App\Http\Controllers\Admin\RolePermisionController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\SettingController;
 use LdapRecord\Models\ActiveDirectory\User;
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +56,8 @@ Route::middleware('auth')->group(function () {
     Route::post('achat/invaliderachat/{id}', [ArticleController::class, 'invaliderachat'])->name('achat.invaliderachat');
     Route::post('comptabilite/validercomptabilite/{id}', [ArticleController::class, 'validercomptabilite'])->name('comptabilite.validercomptabilite');
     Route::post('comptabilite/invalidercomptabilite/{id}', [ArticleController::class, 'invalidercomptabilite'])->name('comptabilite.invalidercomptabilite');
-
+Route::post('/articles/validate-total/{id}', [ArticleController::class, 'validtionarticletotale'])
+    ->name('articles.validate-total');
 
     //////////// get groupe article by type article use ajax
     Route::get('/groupe-articles/{typeId}', [ArticleController::class, 'getGroupesByType']);
@@ -143,10 +145,16 @@ Route::middleware('auth')->group(function () {
     /// admin users routes
    Route::resource('role-users', AdminUserController::class);
 
+   //setting route
+   route::get('setting',[SettingController::class,'index'])->name('setting.index');
+   route::post('setting/update/{id}',[SettingController::class,'update'])->name('setting.update');
+
 
 });
 // routes/web.php
 Route::get('/sap-materials', [SapController::class, 'showMaterials']);
+Route::get('/sap-materialss', [SapController::class, 'getMaterials']);
+
 Route::get('/sap-showuinte', [SapController::class, 'showuinte']);
 Route::get('/view-materials', [SapController::class, 'viewMaterials'])->name('show.materials');
 Route::get('/ldap-test', function () {

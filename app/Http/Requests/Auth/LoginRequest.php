@@ -43,7 +43,7 @@ class LoginRequest extends FormRequest
     $this->ensureIsNotRateLimited();
 
     $credentials = [
-        'samaccountname' => $this->input('username'), // using 'name' as identifier
+        'samaccountname' => strtolower(trim($this->input('username'))),
         'password' => $this->input('password'),
     ];
 

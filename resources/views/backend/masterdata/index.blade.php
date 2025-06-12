@@ -65,9 +65,12 @@
                                               <a href="{{ route('articles.edit',$article->id) }}" class="btn btn-primary">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{{ route('articles.destroy',$article->id) }}" class="btn btn-danger delete-item">
+                                    @can('Article delete')
+                                     <a href="{{ route('articles.destroy',$article->id) }}" class="btn btn-danger delete-item">
                                         <i class="fas fa-trash-alt"></i>
                                     </a>
+                                    @endcan
+
                                     <a href=""
                                         class="btn bg-warning"><i class="fas fa-copy"></i></i></a>
 

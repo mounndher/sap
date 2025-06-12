@@ -40,6 +40,7 @@ class ArticleController extends Controller
           $this->middleware(['permission:Article index'])->only(['index']);
           $this->middleware(['permission:Article create'])->only(['create', 'storeDonnesdebase']);
           $this->middleware(['permission:Article update'])->only(['updateDonnesdebase']);
+          
           $this->middleware(['permission:Article delete'])->only(['destroy']);
 
 
@@ -112,7 +113,7 @@ public function storeDonnesdebase(Request $request)
     $article->MEINS = $request->MEINS;
     $article->XCHPF = $request->XCHPF;
     $article->MAKTX = $request->MAKTX;
-    $article->status = $request->status ?? 0;
+    $article->status = 0;
     $article->save();
 
     // ✅ Dispatch Pusher Event
@@ -120,7 +121,7 @@ public function storeDonnesdebase(Request $request)
     $recipients = Mail_recipients::where('status', 1)->pluck('email')->toArray();
 
     if (count($recipients) > 0) {
-        Mail::to($recipients)->send(new ArticleAddedMail($article));
+       // Mail::to($recipients)->send(new ArticleAddedMail($article));
     } else {
         return redirect()->back()->with([
             'message' => 'Aucun destinataire trouvé pour l\'envoi de l\'email.',
@@ -136,80 +137,75 @@ public function storeDonnesdebase(Request $request)
 
 
 
-    public function edit($id)
-    {
-        //dd(auth()->user()->getAllPermissions()->pluck('name'));
-        $userSap = UserSap::first(); // Assuming you have a UserSap model to fetch SAP credentials
-        if (!$userSap) {
-            return view('backend.masterdata.create', ['materialsData' => null, 'error' => 'SAP user credentials not found']);
-        }
+   public function edit($id)
+{
+    $userSap = UserSap::first();
 
-        // Use the credentials from the UserSap model
-        $username = $userSap->username;
-
-        $password = Crypt::decryptString($userSap->password);
-
-
-        // SAP API endpoints
-        $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
-        $t006aUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/t006aSet?\$format=json";
-
-        // Fetch materials data with error handling
-        try {
-            $materialsResponse = Http::withBasicAuth($username, $password)
-                ->timeout(30)
-                ->get($maktUrl);
-            $materialsData = $materialsResponse->successful()
-                ? $materialsResponse->json()['d']['results'] ?? []
-                : [];
-        } catch (\Exception $e) {
-            $materialsData = [];
-            Log::error('Failed to fetch materials data: ' . $e->getMessage());
-        }
-
-        // Fetch units data with error handling
-        try {
-            $unitsResponse = Http::withBasicAuth($username, $password)
-                ->timeout(30)
-                ->get($t006aUrl);
-            $unitsData = $unitsResponse->successful()
-                ? $unitsResponse->json()['d']['results'] ?? []
-                : [];
-        } catch (\Exception $e) {
-            $unitsData = [];
-            Log::error('Failed to fetch units data: ' . $e->getMessage());
-        }
-
-
-        $article = Article::with('comptabilite')->findOrFail($id);
-        $groupeAcheteur = GroupeAcheteur::all();
-
-        // Get groups for the article's current type
-        $groupes = [];
-        if ($article->MTART) {
-            $groupes = GroupeArticle::where('type_article_id', $article->MTART)->get();
-        }
-         $classes_valoris = Classv::where('type_article_id', $article->MTART)->get();
-         $achat = Achat::where('article_id', $id)->first();
-         // Get active article types
-        $typearticle = TypeArticle::where('status', 1)->get();
-        $comp= Comptabilité::where('article_id', $id)->first();
-                //dd($article->status);
-        return view('backend.masterdata.edit', [
-            'articles' => $article, // Keeping your original variable name
-            'materialsData' => $materialsData,
-            'comp' => $comp,
-            'groupeAcheteur' => $groupeAcheteur,
-            'typearticle' => $typearticle,
-            'groupes' => $groupes,
-            'classes_valoris'=>$classes_valoris,
-            'unitsData' => $unitsData,
-            'achat'=>$achat,
-            'error' => (empty($materialsData) || empty($unitsData)
-                ? 'One or more datasets failed to load'
-                : null)
+    if (!$userSap) {
+        return view('backend.masterdata.create', [
+            'materialsData' => null,
+            'error' => 'SAP user credentials not found'
         ]);
     }
+
+    $username = $userSap->username;
+    $password = Crypt::decryptString($userSap->password);
+
+    // SAP API URLs
+    $maktUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
+    $t006aUrl = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/t006aSet?\$format=json";
+
+    // Materials data
+    try {
+        $materialsResponse = Http::withBasicAuth($username, $password)
+            ->timeout(30)
+            ->get($maktUrl);
+
+        $materialsData = $materialsResponse->successful()
+            ? $materialsResponse->json()['d']['results'] ?? []
+            : [];
+
+    } catch (\Exception $e) {
+        $materialsData = [];
+        Log::error('Failed to fetch materials data: ' . $e->getMessage());
+    }
+
+    // Units data
+    try {
+        $unitsResponse = Http::withBasicAuth($username, $password)
+            ->timeout(30)
+            ->get($t006aUrl);
+
+        $unitsData = $unitsResponse->successful()
+            ? $unitsResponse->json()['d']['results'] ?? []
+            : [];
+
+    } catch (\Exception $e) {
+        $unitsData = [];
+        Log::error('Failed to fetch units data: ' . $e->getMessage());
+    }
+
+    $article = Article::with('comptabilite')->findOrFail($id);
+    $groupeAcheteur = GroupeAcheteur::all();
+    $groupes = $article->MTART ? GroupeArticle::where('type_article_id', $article->MTART)->get() : [];
+    $classes_valoris = Classv::where('type_article_id', $article->MTART)->get();
+    $achat = Achat::where('article_id', $id)->first();
+    $typearticle = TypeArticle::where('status', 1)->get();
+    $comp = Comptabilité::where('article_id', $id)->first();
+
+    return view('backend.masterdata.edit', [
+        'articles' => $article,
+        'materialsData' => $materialsData,
+        'unitsData' => $unitsData,
+        'comp' => $comp,
+        'groupeAcheteur' => $groupeAcheteur,
+        'typearticle' => $typearticle,
+        'groupes' => $groupes,
+        'classes_valoris' => $classes_valoris,
+        'achat' => $achat,
+        'error' => (empty($materialsData) || empty($unitsData)) ? 'One or more datasets failed to load' : null
+    ]);
+}
 
 
 
@@ -257,6 +253,7 @@ public function storeDonnesdebase(Request $request)
         ]);
 
         $article = Article::findOrFail($id);
+
         $typearticle = TypeArticle::where('status', 1)->get();
         // Check for uniqueness of MAKTX only if it's changed
         if ($request->MAKTX !== $article->MAKTX) {
@@ -284,49 +281,81 @@ public function storeDonnesdebase(Request $request)
         ]);
     }
 
- public function updateAchat(Request $request)
+ public function updateAchat(Request $request, $id = null)
 {
-
     $request->validate([
         'BSTME' => 'required',
         'article_id' => 'required|exists:articles,id',
         'groupe_acheteurs_id' => 'required|exists:groupe_acheteurs,id',
     ]);
 
-    Achat::updateOrCreate(
-        ['article_id' => $request->article_id],
-        [
+    $article = Article::findOrFail($request->article_id);
+    if ($article->status == 0) {
+        return redirect()->back()->with([
+            'message' => "Impossible d'ajouter des données : l'article est inactif.",
+            'active_tab' => 'achat',
+            'alert-type' => 'warning',
+        ]);
+    }
+
+    // If ID is provided, update existing Achat by its ID
+    if ($id) {
+        $achat = Achat::findOrFail($id);
+        $achat->update([
             'BSTME' => $request->BSTME,
             'from' => $request->from,
             'to' => $request->to,
-            'status' => $request->status ?? 0, // Default to 0 if not provided
+            'status' => 0,
+            'article_id' => $request->article_id,
             'groupe_acheteurs_id' => $request->groupe_acheteurs_id,
-        ]
-    );
+        ]);
+    } else {
+        // Otherwise, create or update by article_id
+        Achat::updateOrCreate(
+            ['article_id' => $request->article_id],
+            [
+                'BSTME' => $request->BSTME,
+                'from' => $request->from,
+                'to' => $request->to,
+                'status' => 0,
+                'groupe_acheteurs_id' => $request->groupe_acheteurs_id,
+            ]
+        );
+    }
 
-   return redirect()->route('articles.edit', $request->article_id)
+    return redirect()->route('articles.edit', $request->article_id)
         ->with([
             'message' => "Les paramètres d'achat ont été enregistrés avec succès!",
             'alert-type' => 'success',
-             'active_tab' => 'achat'
+            'active_tab' => 'achat'
         ]);
 }
 
 
 
-    public function updateComptabilite(Request $request)
+
+    public function updateComptabilite(Request $request,$id=null)
     {
         //dd($request->all());
         $request->validate([
-            'classe_valoris_id' => 'required',
+            'classe_valoris_id' => 'nullable',
             'code_prix' => 'required',
         ]);
+        $article = Article::findOrFail($request->article_id);
+        if ($article->status == 0) {
+        return redirect()->back()->with([
+            'message' => "Impossible d'ajouter des données : l'article est inactif.",
+            'active_tab' => 'comptabilite',
+            'alert-type' => 'warning',
+        ]);
+    }
 
          Comptabilité::updateOrCreate(
         ['article_id' => $request->article_id],
         [
             'classe_valoris_id' => $request->classe_valoris_id,
             'code_prix' => $request->code_prix,
+            'status'=>0,
         ]
     );
 
@@ -456,4 +485,38 @@ public function invalidercomptabilite($id){
     ]);
 }
 
+
+public function validtionarticletotale($id)
+{
+    Log::info('Validation totale called for article ID: ' . $id);
+
+    $article = Article::findOrFail($id);
+    $achat = Achat::where('article_id', $id)->first();
+    $comptabilite = Comptabilité::where('article_id', $id)->first();
+
+    Log::info('Statuses:', [
+        'article_status' => $article->status,
+        'achat_status' => optional($achat)->status,
+        'comptabilite_status' => optional($comptabilite)->status,
+    ]);
+
+    if (
+        $article->status == 1 &&
+        $achat && $achat->status == 1 &&
+        $comptabilite && $comptabilite->status == 1
+    ) {
+        $article->statustotal = 1;
+        $article->save();
+
+        return response()->json([
+            'message' => 'Article totalement validé avec succès.',
+            'statustotal' => $article->statustotal
+        ]);
+    } else {
+        return response()->json([
+            'message' => 'Impossible de valider totalement l\'article. Vérifiez que toutes les étapes sont validées.',
+            'statustotal' => $article->statustotal ?? 0
+        ], 422);
+    }
+}
 }

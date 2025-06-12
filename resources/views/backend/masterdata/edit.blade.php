@@ -65,13 +65,31 @@ $comptabiliteStatus = statusClass($comp->status ?? null);
                 <div id="form-achat" class="settings-form {{ session('active_tab') == 'achat' ? '' : 'd-none' }}">
                     @include('backend.masterdata.sectionedit.achatedit')
                 </div>
-             
+
 
 
                 <div id="form-comptabilite" class="settings-form {{ session('active_tab') == 'comptabilite' ? '' : 'd-none' }}">
                     @include('backend.masterdata.sectionedit.cotabiliteedit')
                 </div>
             </div>
+             </div>
+            <div class="mt-4 text-center">
+            @php
+    $isValidated = !is_null($articles)
+        && $articles->status == 1
+        && optional($articles->achat)->status == 1
+        && optional($articles->comptabilite)->status == 1;
+@endphp
+
+@if ($isValidated && $articles->statustotal != 1)
+    <button id="validerTotaleBtn"
+            data-id="{{ $articles->id }}"
+            class="btn btn-success">
+        Valider totale
+    </button>
+@endif
+
+
         </div>
     </div>
 </section>
@@ -142,6 +160,34 @@ $comptabiliteStatus = statusClass($comp->status ?? null);
             });
         });
     });
+    const validerTotaleBtn = document.getElementById('validerTotaleBtn');
+        if (validerTotaleBtn) {
+            validerTotaleBtn.addEventListener('click', function() {
+                if (!confirm('Êtes-vous sûr de vouloir valider totalement cet article ?')) return;
+                validerTotaleBtn.disabled = true;
+
+                fetch("{{ route('articles.validate-total', $articles->id) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    validerTotaleBtn.disabled = false;
+                    if (data.message) {
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    validerTotaleBtn.disabled = false;
+                    alert('Erreur lors de la validation totale.');
+                });
+            });
+        }
+
 
 </script>
 @endpush

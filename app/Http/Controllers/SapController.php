@@ -6,24 +6,42 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\UserSap;
+use Illuminate\Support\Facades\Log;
  // Assuming you have a UserSap model for SAP credentials
 class SapController extends Controller
 {
     //
-    public function getMaterials()
-    {
-        $url = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
-        $username = env('SAP_USER', 'eriache');
-        $password = env('SAP_PASS', 'Mondher125');
-        $response = Http::withBasicAuth($username, $password)->get($url);
 
 
-        if ($response->successful()) {
-            return response()->json($response->json());
-        }
+public function getMaterials()
+{
+    $url = "http://lnxs4hprdapp.local.pharma:8000/sap/opu/odata/SAP/Z_GETMASTERDATA_SRV/MAKTSet?\$format=json";
+    $username = env('SAP_USER');
+    $password = env('SAP_PASS');
 
-        return response()->json(['error' => 'Failed to fetch data'], 500);
+    if (!$username || !$password) {
+        return response()->json(['error' => 'SAP credentials not set'], 500);
     }
+
+    $response = Http::withBasicAuth($username, $password)->get($url);
+
+    Log::info('SAP Response Status: ' . $response->status());
+    Log::info('SAP Response Body: ' . $response->body());
+
+    if ($response->successful()) {
+        return response()->json($response->json());
+    }
+
+    return response()->json([
+        'error' => 'Failed to fetch data',
+        'status' => $response->status(),
+        'body' => $response->body()
+    ], 500);
+}
+
+
+
+
 
 
     public function showMaterials()
