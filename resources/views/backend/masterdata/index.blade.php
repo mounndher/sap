@@ -71,7 +71,7 @@
                                     </a>
                                     @endcan
 
-                                    <a href=""
+                                    <a href="{{ route('articles-copy',$article->id) }}"
                                         class="btn bg-warning"><i class="fas fa-copy"></i></i></a>
 
 

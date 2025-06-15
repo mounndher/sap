@@ -6,51 +6,46 @@ use Illuminate\Console\Command;
 use LdapRecord\Models\ActiveDirectory\Group;
 use App\Models\User;
 
-class ImportGrItUsers extends Command
+class ImportGrITUsers extends Command
 {
     protected $signature = 'ldap:import-grit';
-    protected $description = 'Import LDAP users from gr-IT group into the users table';
+    protected $description = 'Import members of the gr-IT group from LDAP';
 
     public function handle()
     {
         $group = Group::where('cn', '=', 'gr-IT')->first();
 
         if (!$group) {
-            $this->error("Group 'gr-IT' not found.");
-            return 1;
+            $this->error('Group "gr-IT" not found.');
+            return;
         }
 
         $members = $group->members()->get();
-        $this->info("Found {$members->count()} members in group gr-IT");
 
         foreach ($members as $ldapUser) {
-            $username = strtolower(trim($ldapUser->getFirstAttribute('samaccountname')));
-            $name = trim($ldapUser->getFirstAttribute('cn'));
+            $username = $ldapUser->getFirstAttribute('samaccountname');
+            $name = $ldapUser->getFirstAttribute('cn');
+            $email = $ldapUser->getFirstAttribute('mail');
+            $guid = $ldapUser->getConvertedGuid();
 
-            // Validate required fields
-            if (empty($username)) {
-                $this->warn("Skipped user with missing username.");
+            if (!$username || !$name) {
+                $this->warn("Skipped one user with missing username or name.");
                 continue;
             }
 
-            if (empty($name)) {
-                $this->warn("Skipped user '{$username}' due to missing full name (cn).");
-                continue;
-            }
-
-            // Create or update the user
             User::updateOrCreate(
                 ['username' => $username],
                 [
                     'name' => $name,
-                    'password' => bcrypt('password') // temporary password
+                    'email' => $email ?: $username . '@local.pharma',
+                    'guid' => $guid,
+                    'password' => bcrypt('default') // or null if using LDAP login
                 ]
             );
 
-            $this->line("Imported: {$name} ({$username})");
+            $this->info("Imported: $username ($name)");
         }
 
-        $this->info("Import completed.");
-        return 0;
+        $this->info('✔ All gr-IT group members imported.');
     }
 }

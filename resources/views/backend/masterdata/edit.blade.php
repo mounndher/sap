@@ -88,7 +88,13 @@ $comptabiliteStatus = statusClass($comp->status ?? null);
         Valider totale
     </button>
 @endif
-
+@if($articles->statustotal = 1)
+<button id="invaliderTotaleBtn"
+            data-id="{{ $articles->id }}"
+            class="btn btn-primary">
+        InValider totale
+    </button>
+@endif
 
         </div>
     </div>

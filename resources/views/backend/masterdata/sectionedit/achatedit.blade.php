@@ -87,7 +87,12 @@
 
         <div class="card-footer bg-whitesmoke text-md-right">
             @can('achat update')
-            <button type="submit" class="btn btn-success" id="save-achat-btn">Enregistrer</button>
+
+
+            @if($achat?->status == 0)
+                <button type="submit" class="btn btn-primary" id="save-achat-btn">Enregistrer</button>
+            @endif
+
             @endcan
             @can('achat valider')
             @if (!is_null($achat) && $achat->status == 0)
@@ -186,6 +191,7 @@
             <button class="btn btn-danger invalidate-btn" data-url="${button.data('url').replace('validerachat', 'invaliderachat')}">Invalider</button>
         `);
 
+                    $('#save-achat-btn, .validatee-btn, .invalidate-btn').hide();
                 // تحديث تبويب Achat
                 $('.nav-link.achat-tab').removeClass('invalid valid').addClass('valid');
             })

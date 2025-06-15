@@ -32,15 +32,15 @@ class ArticleController extends Controller
           $this->middleware(['permission:achat invalider'])->only(['invaliderachat']);
 
          // $this->middleware(['permission:Comptabilité edit'])->only(['edit']);
-          $this->middleware(['permission:Comptabilité update'])->only(['updateComptabilite']);
-          $this->middleware(['permission:Comptabilité valider'])->only(['validercomptabilite']);
-          $this->middleware(['permission:Comptabilité invalider'])->only(['invalidercomptabilite']);
+          $this->middleware(['permission:Comptabilité  update'])->only(['updateComptabilite']);
+          $this->middleware(['permission:Comptabilité  valider'])->only(['validercomptabilite']);
+          $this->middleware(['permission:Comptabilité  invalide'])->only(['invalidercomptabilite']);
 
           $this->middleware(['permission:edit Article'])->only(['edit']);
           $this->middleware(['permission:Article index'])->only(['index']);
           $this->middleware(['permission:Article create'])->only(['create', 'storeDonnesdebase']);
           $this->middleware(['permission:Article update'])->only(['updateDonnesdebase']);
-          
+
           $this->middleware(['permission:Article delete'])->only(['destroy']);
 
 
@@ -432,6 +432,11 @@ public function storeDonnesdebase(Request $request)
 
     public function invaliderdonnesdebase($id){
     $article = Article::findOrFail($id);
+    if($article->statustotal == 1){
+        return response()->json([
+            'message' => 'Impossible d\'invalider les données de base car l\'article est totalement validé.',
+        ]);
+    }
     $article->status = 0;
     $article->save();
 
@@ -456,6 +461,12 @@ public function storeDonnesdebase(Request $request)
 
 public function invaliderachat($id){
     $article =  Achat::findOrFail($id);
+    $articles = Article::where('id', $article->article_id)->first();
+    if($articles->statustotal == 1){
+        return response()->json([
+            'message' => 'Impossible d\'invalider les données de base car l\'article est totalement validé.',
+        ], 422);
+    }
     $article->status = 0;
     $article->save();
 
@@ -476,7 +487,14 @@ public function validercomptabilite($id)
 }
 
 public function invalidercomptabilite($id){
+
     $article = Comptabilité::findOrFail($id);
+    $articles = Article::where('id', $article->article_id)->first();
+    if($articles->statustotal == 1){
+        return response()->json([
+            'message' => 'Impossible d\'invalider les données de base car l\'article est totalement validé.',
+        ], 422);
+    }
     $article->status = 0;
     $article->save();
 
@@ -518,5 +536,44 @@ public function validtionarticletotale($id)
             'statustotal' => $article->statustotal ?? 0
         ], 422);
     }
+}
+public function invaliderarticletotale($id)
+{
+    Log::info('Invalidation totale called for article ID: ' . $id);
+
+    $article = Article::findOrFail($id);
+    $article->statustotal = 0;
+    $article->save();
+
+    Log::info('Article status after invalidation:', [
+        'statustotal' => $article->statustotal
+    ]);
+
+    return response()->json([
+        'message' => 'Article invalidé avec succès.',
+        'statustotal' => $article->statustotal
+    ]);
+
+
+}
+
+
+    public function copy(string $id)
+{
+    // Find the original article
+    $article = Article::with(['achat', 'comptabilite'])->findOrFail($id);
+
+    // Clone the article
+    $newArticle = $article->replicate();
+    $newArticle->status = 0;
+    $newArticle->statustotal = 0;
+    $newArticle->save();
+
+
+
+   return redirect()->back()->with([
+            'message' => 'Article totalement validé avec succès.',
+            'alert-type' => 'sucess'
+        ]);
 }
 }

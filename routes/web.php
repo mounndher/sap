@@ -56,9 +56,9 @@ Route::middleware('auth')->group(function () {
     Route::post('achat/invaliderachat/{id}', [ArticleController::class, 'invaliderachat'])->name('achat.invaliderachat');
     Route::post('comptabilite/validercomptabilite/{id}', [ArticleController::class, 'validercomptabilite'])->name('comptabilite.validercomptabilite');
     Route::post('comptabilite/invalidercomptabilite/{id}', [ArticleController::class, 'invalidercomptabilite'])->name('comptabilite.invalidercomptabilite');
-Route::post('/articles/validate-total/{id}', [ArticleController::class, 'validtionarticletotale'])
+    Route::post('/articles/validate-total/{id}', [ArticleController::class, 'validtionarticletotale'])
     ->name('articles.validate-total');
-
+    Route::get('articles-copy/{id}', [ArticleController::class, 'copy'])->name('articles-copy');
     //////////// get groupe article by type article use ajax
     Route::get('/groupe-articles/{typeId}', [ArticleController::class, 'getGroupesByType']);
     Route::get('/groupe-articless/{typeArticleId}', [ArticleController::class, 'getGroupes']);
@@ -184,7 +184,29 @@ Route::get('/test-email', function () {
 });
 
 
+use LdapRecord\Models\ActiveDirectory\User as LdapUser;
 
+Route::get('/check-login-permission/{username}', function ($username) {
+    $user = LdapUser::where('samaccountname', '=', $username)->first();
+
+    if (!$user) {
+        return "User {$username} not found.";
+    }
+
+    $groups = $user->groups()->get()->pluck('cn')->flatten()->toArray();
+
+    echo "<h3>User {$username} is in the following groups:</h3><ul>";
+    foreach ($groups as $groupName) {
+        echo "<li>{$groupName}</li>";
+    }
+    echo "</ul>";
+
+    if (in_array('gr-IT', $groups)) {
+        return "<strong style='color: green;'>✅ User has login permission via gr-IT group</strong>";
+    } else {
+        return "<strong style='color: red;'>❌ User does NOT have login permission</strong>";
+    }
+});
 
 
 
@@ -223,6 +245,9 @@ Route::get('/test-group-members', function () {
 
     return "Total members: " . $members->count();
 });
+
+
+
 
 
 require __DIR__ . '/auth.php';

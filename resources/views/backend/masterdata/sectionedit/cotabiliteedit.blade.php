@@ -43,15 +43,19 @@
         </div>
 
         <div class="card-footer bg-whitesmoke text-md-right">
+            @can('Comptabilité  update')
+            @if($comp?->status == 0)
+            <button class="btn btn-primary" type="submit" id="save-btn">Enregistrer</button>
+            @endif
+            @endcan
 
-            <button class="btn btn-primary" type="submit">Enregistrer</button>
-
-
+            @can('Comptabilité  valider')
             @if(!is_null($comp) && $comp->status == 0)
             <button class="btn btn-success validate-bttn" data-url="{{ route('comptabilite.validercomptabilite', $comp->id) }}">Valider</button>
             @endif
+            @endcan
 
-            @can('Comptabilité invalider')
+            @can('Comptabilité  invalider')
             @if(!is_null($comp) && $comp->status == 1)
             <button class="btn btn-success invalidate-bttn" data-url="{{ route('comptabilite.invalidercomptabilite', $comp->id) }}">InValider</button>
             @endif
@@ -83,6 +87,7 @@
         button.replaceWith(`
             <button class="btn btn-danger invalidate-bttn" data-url="${newUrl}">InValider</button>
         `);
+         $('#save-btn, .validate-bttn, .invalidate-bttn').hide();
 
         $('.nav-link.comptabilite-tab')
             .removeClass('invalid in-progress valid')

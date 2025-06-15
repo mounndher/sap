@@ -61,22 +61,24 @@ return [
 
     'providers' => [
         'users' => [
-        'driver' => 'ldap',
-        'model' => LdapRecord\Models\ActiveDirectory\User::class,
-        'rules' => [],
-        'database' => [
-            'model' => App\Models\User::class,
-            'sync_passwords' => true,
-            'insert' => true, // ⬅️ this allows automatic insertion
-            'sync_attributes' => [
-                  'username' => 'samaccountname',  // ✅ Unique login
-                   'name' => 'cn',                  // ✅ Nom complet
-                //'email' => 'mail',
+            'driver' => 'ldap',
+            'model' => LdapRecord\Models\ActiveDirectory\User::class,
+            'rules' => [
+               \App\Ldap\Rules\OnlyGrItGroup::class,
             ],
-         'identifier' => 'username', // ✅ use email as login key
+            'database' => [
+                'model' => App\Models\User::class,
+                'sync_passwords' => true,
+                'insert' => true, // ⬅️ this allows automatic insertion
+                'sync_attributes' => [
+                    'username' => 'samaccountname',  // ✅ Unique login
+                    'name' => 'cn',                  // ✅ Nom complet
+                    //'email' => 'mail',
+                ],
+                'identifier' => 'username', // ✅ use email as login key
 
+            ],
         ],
-    ],
 
         // 'users' => [
         //     'driver' => 'database',

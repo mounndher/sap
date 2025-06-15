@@ -105,7 +105,10 @@
         {{-- Show Save button when not validated --}}
         <button class="btn btn-primary" id="save-btn">Save Changes</button>
         @else
-         <button class="btn btn-primary" id="save-btn">Save Changes</button>
+
+        <script>
+        console.log('Données de base validées');
+        </script>
     @endif
 
     </form>
@@ -163,7 +166,7 @@ $(document).on('click', '.validatee-btn', function () {
     .then(function (response) {
         toastr.success(response.data.message || 'Succès');
         button.replaceWith(`<button class="btn btn-danger invalidatee-btn" data-id="${articleId}">InValider</button>`);
-          //  $("#action-buttons").load(location.href + " #action-buttons > *");
+        $('#save-btn, .validatee-btn, .invalidatee-btn').hide();
         $('.nav-link.donnesdebase-tab').removeClass('invalid in-progress').addClass('valid');
     })
     .catch(function (error) {
@@ -191,9 +194,8 @@ $(document).on('click', '.invalidatee-btn', function () {
     })
     .then(function (response) {
         toastr.success(response.data.message || 'Données invalidées');
-          //$("#action-buttons").load(location.href + " #action-buttons > *");
+        button.replaceWith(`<button class="btn btn-success validatee-btn" data-id="${articleId}">Valider</button>`);
         $('.nav-link.donnesdebase-tab').removeClass('valid in-progress').addClass('invalid');
-
     })
     .catch(function (error) {
         console.error("AJAX Error:", error);
